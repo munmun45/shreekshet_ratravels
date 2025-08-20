@@ -6,6 +6,38 @@
 <head>
   
 <?php include 'config/meta.php'; ?>
+<?php
+// Frontend DB connection & data fetch
+require_once __DIR__ . '/config/config.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $dbname = "shreekshetra_travels";
+  $conn = @new mysqli($servername, $username, $password, $dbname);
+  if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+}
+
+$activities = [];
+$categories = [];
+if ($conn && !$conn->connect_error) {
+  $sql = "SELECT id, title, location, category, price, duration, image_url, short_desc FROM activities WHERE status=1 ORDER BY id DESC";
+  if ($res = $conn->query($sql)) {
+    while ($row = $res->fetch_assoc()) {
+      $activities[] = $row;
+      $c = trim((string)$row['category']);
+      if ($c !== '') { $categories[$c] = true; }
+    }
+    $res->free();
+  }
+}
+
+function cat_slug($s) {
+  $s = strtolower($s);
+  $s = preg_replace('/[^a-z0-9]+/','-',$s);
+  return trim($s, '-');
+}
+?>
 
 
 <style>
@@ -278,13 +310,11 @@
                 <div class="container">
                     <div class="filter-tabs">
                         <button class="filter-btn active" data-filter="all">All Activities</button>
-                        <button class="filter-btn" data-filter="city-tour">City Tours</button>
-                        <button class="filter-btn" data-filter="hiking">Hiking</button>
-                        <button class="filter-btn" data-filter="trekking">Trekking</button>
-                        <button class="filter-btn" data-filter="rafting">Rafting</button>
-                        <button class="filter-btn" data-filter="temple-tours">Temple Tours</button>
-                        <button class="filter-btn" data-filter="beach-activities">Beach Activities</button>
-                        <button class="filter-btn" data-filter="wildlife">Wildlife</button>
+                        <?php foreach (array_keys($categories) as $cat): $slug = cat_slug($cat); ?>
+                          <button class="filter-btn" data-filter="<?= htmlspecialchars($slug) ?>">
+                            <?= htmlspecialchars($cat) ?>
+                          </button>
+                        <?php endforeach; ?>
                     </div>
                     
                     <div class="search-box">
@@ -294,6 +324,115 @@
                 </div>
             </section>
 
+            <!-- Booking Modal -->
+            <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Book Activity</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="bookingForm">
+                      <input type="hidden" name="activity_id" id="bk_activity_id">
+                      <input type="hidden" name="activity_title" id="bk_activity_title">
+                      <div class="mb-3">
+                        <label class="form-label">Activity</label>
+                        <input type="text" class="form-control" id="bk_activity_title_display" disabled>
+                      </div>
+                      <div class="mb-3">
+                        <label for="bk_date" class="form-label">Select Date</label>
+                        <input type="date" class="form-control" id="bk_date" name="date" required>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="bk_adults" class="form-label">Total Adults</label>
+                          <input type="number" class="form-control" id="bk_adults" name="adults" min="1" step="1" value="1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="bk_children" class="form-label">Total Children</label>
+                          <input type="number" class="form-control" id="bk_children" name="children" min="0" step="1" value="0">
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="bk_mobile" class="form-label">Mobile Number</label>
+                        <input type="tel" class="form-control" id="bk_mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="bk_email" class="form-label">Email (optional)</label>
+                        <input type="email" class="form-control" id="bk_email" name="email" placeholder="example@domain.com">
+                      </div>
+                      <div id="bk_alert" class="alert d-none" role="alert"></div>
+                      <button type="submit" class="btn btn-primary w-100" id="bk_submit">Submit Booking</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <script>
+            (function(){
+              function openBookingModal(activityId, activityTitle){
+                document.getElementById('bk_activity_id').value = activityId;
+                document.getElementById('bk_activity_title').value = activityTitle;
+                document.getElementById('bk_activity_title_display').value = activityTitle;
+                document.getElementById('bk_alert').className = 'alert d-none';
+                if (window.jQuery && $('#bookingModal').modal) {
+                  $('#bookingModal').modal('show');
+                } else {
+                  var modalEl = document.getElementById('bookingModal');
+                  modalEl.style.display = 'block';
+                }
+              }
+
+              document.addEventListener('click', function(e){
+                const btn = e.target.closest('.book-now-btn');
+                if (!btn) return;
+                e.preventDefault();
+                const id = btn.getAttribute('data-activity-id');
+                const title = btn.getAttribute('data-activity-title');
+                openBookingModal(id, title);
+              });
+
+              // Set min date = today
+              const dateInput = document.getElementById('bk_date');
+              const today = new Date();
+              const yyyy = today.getFullYear();
+              const mm = String(today.getMonth()+1).padStart(2,'0');
+              const dd = String(today.getDate()).padStart(2,'0');
+              dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+              const form = document.getElementById('bookingForm');
+              form.addEventListener('submit', async function(e){
+                e.preventDefault();
+                const submitBtn = document.getElementById('bk_submit');
+                const alertBox = document.getElementById('bk_alert');
+                alertBox.className = 'alert d-none';
+                submitBtn.disabled = true;
+                try {
+                  const fd = new FormData(form);
+                  const res = await fetch('process/activity_booking.php', {
+                    method: 'POST',
+                    body: fd
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = data.message || 'Booking submitted successfully!';
+                    form.reset();
+                  } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = data.message || 'Failed to submit booking.';
+                  }
+                } catch(err) {
+                  alertBox.className = 'alert alert-danger';
+                  alertBox.textContent = 'Network or server error. Please try again.';
+                } finally {
+                  submitBtn.disabled = false;
+                }
+              });
+            })();
+            </script>
 
 
 
@@ -303,293 +442,60 @@
     <section class="destinations-grid">
                 <div class="container">
                     <div class="row" id="destinationsGrid">
-                        <!-- Bhubaneswar City Tour -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="city-tour temple-tours" data-name="Bhubaneswar City Tour Heritage Temples Lingaraja">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1605538883669-825200433431?w=400&h=250&fit=crop" alt="Bhubaneswar City Tour">
-                                    <div class="price-tag">₹2,999</div>
-                                    <div class="activity-tag">City Tour</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Bhubaneswar, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Temple City Heritage Tour</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Lingaraja Temple</span>
-                                        <span class="activity-chip">Mukteshwar Temple</span>
-                                        <span class="activity-chip">Udayagiri Caves</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.8</span>
-                                            <span class="reviews">(1.2k Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">2 Days</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
+                      <?php if (empty($activities)): ?>
+                        <div class="col-12">
+                          <div class="no-results" style="display:block;">
+                            <i class="fas fa-search"></i>
+                            <h3>No activities found</h3>
+                            <p>Try adjusting your search criteria or filters to discover more Odisha adventures</p>
+                          </div>
                         </div>
-
-                        <!-- Puri Beach & Temple Tour -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="city-tour temple-tours beach-activities" data-name="Puri Jagannath Temple Beach Activities Golden Beach">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=250&fit=crop" alt="Puri Temple & Beach">
-                                    <div class="price-tag">₹3,499</div>
-                                    <div class="activity-tag">Beach & Temple</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Puri, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Jagannath Temple & Golden Beach</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Temple Visit</span>
-                                        <span class="activity-chip">Beach Activities</span>
-                                        <span class="activity-chip">Sand Art</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.9</span>
-                                            <span class="reviews">(2.1k Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">3 Days</div>
-                                    </div>
+                      <?php else: ?>
+                        <?php foreach ($activities as $a):
+                          $title    = htmlspecialchars($a['title']);
+                          $loc      = htmlspecialchars($a['location']);
+                          $cat      = htmlspecialchars($a['category']);
+                          $catSlug  = cat_slug($a['category']);
+                          $price    = number_format((float)$a['price']);
+                          $duration = htmlspecialchars($a['duration']);
+                          $img      = htmlspecialchars($a['image_url']);
+                          $search   = htmlspecialchars($a['title'].' '.$a['location'].' '.$a['category']);
+                        ?>
+                        <div class="col-lg-4 col-md-6 destination-item" data-category="<?= $catSlug ?>" data-name="<?= $search ?>">
+                          <div class="destination-box">
+                            <figure>
+                              <img src="<?= $img ?>" alt="<?= $title ?>">
+                              <div class="price-tag">₹<?= $price ?></div>
+                              <div class="activity-tag"><?= $cat ?></div>
+                            </figure>
+                            <div class="bottom-con">
+                              <div class="location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <?= $loc ?>
+                              </div>
+                              <a href="#" class="destination-title"><?= $title ?></a>
+                              <div class="activity-list">
+                                <span class="activity-chip"><?= $cat ?></span>
+                              </div>
+                              <div class="rating">
+                                <div class="rating-stars">
+                                  <i class="fa-solid fa-star"></i>
+                                  <span>4.8</span>
+                                  <span class="reviews">(1k+ Reviews)</span>
                                 </div>
-                                <button class="view-trip-btn">View Trip</button>
+                                <div class="duration-days"><?= $duration ?></div>
+                              </div>
                             </div>
+                            <button class="view-trip-btn book-now-btn" 
+                                    data-activity-id="<?= (int)$a['id'] ?>"
+                                    data-activity-title="<?= $title ?>"
+                                    data-activity-price="<?= $price ?>">
+                              Book Now
+                            </button>
+                          </div>
                         </div>
-
-                        <!-- Simlipal Trekking -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="hiking trekking wildlife" data-name="Simlipal National Park Trekking Wildlife Safari Waterfall">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop" alt="Simlipal Trekking">
-                                    <div class="price-tag">₹4,999</div>
-                                    <div class="activity-tag">Trekking</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Simlipal, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Simlipal Wildlife Trekking</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Jungle Trekking</span>
-                                        <span class="activity-chip">Wildlife Safari</span>
-                                        <span class="activity-chip">Waterfall Visit</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.6</span>
-                                            <span class="reviews">(856 Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">4 Days</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Chilika Lake Activities -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="rafting beach-activities wildlife" data-name="Chilika Lake Boating Dolphin Safari Satapada">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="Chilika Lake">
-                                    <div class="price-tag">₹3,299</div>
-                                    <div class="activity-tag">Water Sports</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Chilika Lake, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Chilika Lake Dolphin Safari</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Boat Ride</span>
-                                        <span class="activity-chip">Dolphin Watching</span>
-                                        <span class="activity-chip">Bird Watching</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.7</span>
-                                            <span class="reviews">(1.4k Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">2 Days</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Konark Heritage Walk -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="city-tour temple-tours hiking" data-name="Konark Sun Temple Heritage Walk Archaeological Site">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=250&fit=crop" alt="Konark Sun Temple">
-                                    <div class="price-tag">₹2,199</div>
-                                    <div class="activity-tag">Heritage</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Konark, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Sun Temple Heritage Walk</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Guided Tour</span>
-                                        <span class="activity-chip">Photography</span>
-                                        <span class="activity-chip">Cultural Show</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.8</span>
-                                            <span class="reviews">(1.8k Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">1 Day</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Dhauli Hills Hiking -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="hiking temple-tours" data-name="Dhauli Hills Hiking Peace Pagoda Kalinga War Memorial">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="Dhauli Hills">
-                                    <div class="price-tag">₹1,899</div>
-                                    <div class="activity-tag">Hiking</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Dhauli, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Dhauli Hills Peace Pagoda Trek</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Hill Hiking</span>
-                                        <span class="activity-chip">Peace Pagoda</span>
-                                        <span class="activity-chip">Sunset Views</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.5</span>
-                                            <span class="reviews">(672 Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">1 Day</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Raghurajpur Village Tour -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="city-tour" data-name="Raghurajpur Heritage Village Art Crafts Traditional Culture">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop" alt="Heritage Village">
-                                    <div class="price-tag">₹1,699</div>
-                                    <div class="activity-tag">Cultural</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Raghurajpur, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Heritage Crafts Village Tour</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Art Workshop</span>
-                                        <span class="activity-chip">Village Walk</span>
-                                        <span class="activity-chip">Cultural Show</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.6</span>
-                                            <span class="reviews">(543 Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">1 Day</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Gopalpur Beach Activities -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="beach-activities rafting" data-name="Gopalpur Beach Water Sports Surfing Fishing">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=250&fit=crop" alt="Gopalpur Beach">
-                                    <div class="price-tag">₹2,799</div>
-                                    <div class="activity-tag">Beach</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Gopalpur, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Gopalpur Beach Water Adventures</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Water Sports</span>
-                                        <span class="activity-chip">Beach Volleyball</span>
-                                        <span class="activity-chip">Lighthouse Visit</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.4</span>
-                                            <span class="reviews">(789 Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">2 Days</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
-
-                        <!-- Daringbadi Hill Station -->
-                        <div class="col-lg-4 col-md-6 destination-item" data-category="hiking trekking" data-name="Daringbadi Hill Station Kashmir Odisha Coffee Garden Trek">
-                            <div class="destination-box">
-                                <figure>
-                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="Daringbadi Hills">
-                                    <div class="price-tag">₹3,999</div>
-                                    <div class="activity-tag">Hill Station</div>
-                                </figure>
-                                <div class="bottom-con">
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Daringbadi, Odisha
-                                    </div>
-                                    <a href="#" class="destination-title">Kashmir of Odisha Adventure</a>
-                                    <div class="activity-list">
-                                        <span class="activity-chip">Hill Trekking</span>
-                                        <span class="activity-chip">Coffee Plantation</span>
-                                        <span class="activity-chip">Nature Walk</span>
-                                    </div>
-                                    <div class="rating">
-                                        <div class="rating-stars">
-                                            <i class="fa-solid fa-star"></i>
-                                            <span>4.7</span>
-                                            <span class="reviews">(934 Reviews)</span>
-                                        </div>
-                                        <div class="duration-days">3 Days</div>
-                                    </div>
-                                </div>
-                                <button class="view-trip-btn">View Trip</button>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
+                      <?php endif; ?>
                     </div>
                     
                     <div class="no-results" id="noResults" style="display: none;">
