@@ -42,11 +42,11 @@
                                 <a class="nav-link p-0" href="destinations.php">Destination</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link p-0" href="activities.php">Activities</a>
+                                <a class="nav-link p-0" href="car-rental.php">Car Rental</a>
                             </li>
                             
                             <li class="nav-item">
-                                <a class="nav-link p-0" href="blog.php">Blog</a>
+                                <a class="nav-link p-0" href="blog.php">News & Article</a>
                             </li>
                             
                             

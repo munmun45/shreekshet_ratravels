@@ -9,7 +9,7 @@
             </a>
         </li>
 
-
+        <hr>
 
         <li class="nav-item">
             <a class="nav-link collapsed" href="destination">
@@ -26,17 +26,11 @@
             </a>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="booking">
-                <i class="bi bi-ticket-perforated-fill"></i> <!-- booking/ticket icon -->
-                <span>Activity & Destination Bookings</span>
-            </a>
-        </li>
 
         <li class="nav-item">
             <a class="nav-link collapsed" href="booking-hotel">
                 <i class="bi bi-building"></i> <!-- hotel/building icon -->
-                <span>Hotel Booking Manager</span>
+                <span>Booking Manager</span>
             </a>
         </li>
 
