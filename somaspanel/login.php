@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Login - Hotel Admin</title>
+    <title>Login - Admin Panel</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -45,7 +45,7 @@
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
                                     <img src="assets/img/logo.png" alt="">
-                                    <span class="d-none d-lg-block">Hotel Admin</span>
+                                    <span class="d-none d-lg-block">Admin Panel</span>
                                 </a>
                             </div><!-- End Logo -->
 
@@ -54,7 +54,7 @@
                                 <div class="card-body">
 
                                     <div class="pt-4 pb-2">
-                                        <h5 class="card-title text-center pb-0 fs-4">Hotel Four Waves</h5>
+                                        <h5 class="card-title text-center pb-0 fs-4">Shreekshetra Travels</h5>
                                         <p class="text-center small">Please login to Manage Website</p>
                                     </div>
 
@@ -88,7 +88,7 @@
 
                             <div class="credits">
 
-                                Designed by <a href="#">MUNMUN</a>
+                                Designed by <a href="#">SOMAS TECHNOLOGY INDIA PRIVATE LIMITED</a>
                             </div>
 
                         </div>
