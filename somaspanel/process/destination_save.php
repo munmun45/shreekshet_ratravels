@@ -2,14 +2,30 @@
 // Save (create/update) destination using prepared statements
 require_once __DIR__ . '/../config/config.php';
 
-function redirect($ok = true) {
+// Basic error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+
+// Simple logger
+$__logDir = __DIR__ . '/../logs';
+if (!is_dir($__logDir)) { @mkdir($__logDir, 0775, true); }
+$__logFile = $__logDir . '/destinations.log';
+function dlog($msg){
+    global $__logFile;
+    @file_put_contents($__logFile, '['.date('Y-m-d H:i:s')."] " . $msg . "\n", FILE_APPEND);
+}
+
+function redirect($ok = true, $msg = '') {
     $status = $ok ? 'success' : 'error';
-    header("Location: ../destination.php?status=$status");
+    $qs = "status=$status";
+    if ($msg !== '') { $qs .= '&msg=' . urlencode($msg); }
+    header("Location: ../destination.php?$qs");
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect(false);
+    dlog('Invalid request method: ' . $_SERVER['REQUEST_METHOD']);
+    redirect(false, 'invalid_request');
 }
 
 // Inputs
@@ -23,7 +39,8 @@ $short_desc = isset($_POST['short_desc']) ? trim($_POST['short_desc']) : '';
 $status     = isset($_POST['status']) ? (int)$_POST['status'] : 1;
 
 if ($title === '' || $location === '' || $category === '' || $short_desc === '') {
-    redirect(false);
+    dlog('Validation failed: missing required fields');
+    redirect(false, 'missing_fields');
 }
 
 // Handle image upload (optional on edit)
@@ -31,18 +48,21 @@ $image_url = $existing_image; // default to existing
 if (isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['image_file']['error'] !== UPLOAD_ERR_NO_FILE) {
     $file = $_FILES['image_file'];
     if ($file['error'] !== UPLOAD_ERR_OK) {
-        redirect(false);
+        dlog('Upload error code: ' . $file['error']);
+        redirect(false, 'upload_error');
     }
     $maxSize = 5 * 1024 * 1024; // 5MB
     if ($file['size'] > $maxSize) {
-        redirect(false);
+        dlog('Upload too large: ' . $file['size']);
+        redirect(false, 'file_too_large');
     }
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
     $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
     if (!isset($allowed[$mime])) {
-        redirect(false);
+        dlog('Invalid mime: ' . $mime);
+        redirect(false, 'invalid_file');
     }
     $ext = $allowed[$mime];
     $uploadsDir = realpath(__DIR__ . '/../../assets/images');
@@ -61,14 +81,15 @@ if (isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['
     $filename = 'dst_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $targetPath = $destDir . '/' . $filename;
     if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-        redirect(false);
+        dlog('move_uploaded_file failed to: ' . $targetPath);
+        redirect(false, 'upload_move_fail');
     }
     // Web-accessible relative path
     $image_url = 'assets/images/destinations/' . $filename;
 }
 
 // Ensure table exists (safety)
-$conn->query("CREATE TABLE IF NOT EXISTS destinations (
+$createOk = $conn->query("CREATE TABLE IF NOT EXISTS destinations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     location VARCHAR(255) NOT NULL,
@@ -80,29 +101,33 @@ $conn->query("CREATE TABLE IF NOT EXISTS destinations (
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+if (!$createOk) { dlog('Table create error: ' . $conn->error); }
 
 $ok = false;
 
 if ($id !== '') {
     // Update
-    $sql = "UPDATE destinations SET title=?, location=?, category=?, price=?, image_url=?, short_desc=?, status=?, updated_at=NOW() WHERE id=?";
+    $sql = "UPDATE destinations SET title=?, location=?, category=?, price=?, image_url=?, short_desc=?, status=? WHERE id=?";
     if ($stmt = $conn->prepare($sql)) {
         $id_int = (int)$id;
         // types order: s,s,s,d,s,s,i,i
         $stmt->bind_param('sssdssii', $title, $location, $category, $price, $image_url, $short_desc, $status, $id_int);
         $ok = $stmt->execute();
+        if (!$ok) { dlog('Update execute error: ' . $stmt->error); }
         $stmt->close();
-    }
+    } else { dlog('Update prepare failed: ' . $conn->error); }
 } else {
     // Insert
-    $sql = "INSERT INTO destinations (title, location, category, price, image_url, short_desc, status, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+    $sql = "INSERT INTO destinations (title, location, category, price, image_url, short_desc, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
     if ($stmt = $conn->prepare($sql)) {
         // types order: s,s,s,d,s,s,i
         $stmt->bind_param('sssdssi', $title, $location, $category, $price, $image_url, $short_desc, $status);
         $ok = $stmt->execute();
+        if (!$ok) { dlog('Insert execute error: ' . $stmt->error); }
         $stmt->close();
-    }
+    } else { dlog('Insert prepare failed: ' . $conn->error); }
 }
 
-redirect($ok);
+if (!$ok && $conn && $conn->error) { dlog('Conn error: ' . $conn->error); }
+redirect($ok, $ok ? 'saved' : 'db_error');

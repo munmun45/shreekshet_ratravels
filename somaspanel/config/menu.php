@@ -32,6 +32,14 @@
         </li>
 
       
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="booking">
+                <i class="bi bi-calendar-event"></i>
+                <span>Booking Manager</span>
+            </a>
+        </li>
+
+      
 
 
 

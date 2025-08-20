@@ -6,6 +6,38 @@
 <head>
   
 <?php include 'config/meta.php'; ?>
+<?php
+// Frontend DB connection & data fetch for destinations
+require_once __DIR__ . '/config/config.php';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $dbname = "shreekshetra_travels";
+  $conn = @new mysqli($servername, $username, $password, $dbname);
+  if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+}
+
+$destinations = [];
+$categories = [];
+if ($conn && !$conn->connect_error) {
+  $sql = "SELECT id, title, location, category, price, image_url, short_desc FROM destinations WHERE status=1 ORDER BY id DESC";
+  if ($res = $conn->query($sql)) {
+    while ($row = $res->fetch_assoc()) {
+      $destinations[] = $row;
+      $c = trim((string)$row['category']);
+      if ($c !== '') { $categories[$c] = true; }
+    }
+    $res->free();
+  }
+}
+
+function cat_slug($s) {
+  $s = strtolower($s);
+  $s = preg_replace('/[^a-z0-9]+/','-',$s);
+  return trim($s, '-');
+}
+?>
 
 
     <style>
@@ -85,6 +117,22 @@
         .bottom-con {
             padding: 20px;
         }
+        .book-now-btn{
+
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
         
         .location {
             color: #667eea;
@@ -130,6 +178,17 @@
             font-size: 60px;
             margin-bottom: 20px;
             color: #ddd;
+        }
+
+        .filter-btn{
+            background-color: #1ec28b;
+    padding: 5px 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    margin-top: 26px;
+    color: white;
+    font-weight: 500;
         }
         
         /* Large screens: center and allow wrapping */
@@ -221,316 +280,112 @@
     <div class="container">
             <div class="filter-tabs">
                 <button class="filter-btn active" data-filter="all">All Destinations</button>
-                <button class="filter-btn" data-filter="odisha">Odisha</button>
-                <button class="filter-btn" data-filter="west-bengal">West Bengal</button>
-                <button class="filter-btn" data-filter="jharkhand">Jharkhand</button>
-                <button class="filter-btn" data-filter="andhra-pradesh">Andhra Pradesh</button>
-                <button class="filter-btn" data-filter="chhattisgarh">Chhattisgarh</button>
-                <button class="filter-btn" data-filter="temples">Temples</button>
-                <button class="filter-btn" data-filter="beaches">Beaches</button>
-                <button class="filter-btn" data-filter="heritage">Heritage</button>
-                <button class="filter-btn" data-filter="nature">Nature</button>
+                <?php foreach (array_keys($categories) as $cat): $slug = cat_slug($cat); ?>
+                  <button class="filter-btn" data-filter="<?= htmlspecialchars($slug) ?>">
+                    <?= htmlspecialchars($cat) ?>
+                  </button>
+                <?php endforeach; ?>
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search destinations...">
+                <input type="text" id="searchInput" placeholder="Search destinations..." style="padding: 10px; margin-top: 20px;" >
                 <i class="fas fa-search search-icon"></i>
             </div>
         </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Book Destination</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <form id="bookingForm">
+              <input type="hidden" name="activity_id" id="bk_activity_id">
+              <input type="hidden" name="activity_title" id="bk_activity_title">
+              <div class="mb-3">
+                <label class="form-label">Destination</label>
+                <input type="text" class="form-control" id="bk_activity_title_display" disabled>
+              </div>
+              <div class="mb-3">
+                <label for="bk_date" class="form-label">Select Date</label>
+                <input type="date" class="form-control" id="bk_date" name="date" required>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="bk_adults" class="form-label">Total Adults</label>
+                  <input type="number" class="form-control" id="bk_adults" name="adults" min="1" step="1" value="1" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="bk_children" class="form-label">Total Children</label>
+                  <input type="number" class="form-control" id="bk_children" name="children" min="0" step="1" value="0">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="bk_mobile" class="form-label">Mobile Number</label>
+                <input type="tel" class="form-control" id="bk_mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required>
+              </div>
+              <div class="mb-3">
+                <label for="bk_email" class="form-label">Email (optional)</label>
+                <input type="email" class="form-control" id="bk_email" name="email" placeholder="example@domain.com">
+              </div>
+              <div id="bk_alert" class="alert d-none" role="alert"></div>
+              <button type="submit" class="btn btn-primary w-100" id="bk_submit">Submit Booking</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- DESTINATIONS GRID -->
     <section class="destinations-grid">
         <div class="container">
             <div class="row" id="destinationsGrid">
-                <!-- Odisha Destinations -->
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha temples" data-name="Jagannath Temple Puri Beach">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=200&fit=crop" alt="Puri Jagannath Temple">
-                            <div class="price-tag">₹2,999</div>
-                            <div class="category-tag">Temple</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Puri, Odisha</div>
-                            <a href="#" class="destination-title">Jagannath Temple & Puri Beach</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.9</span>
-                                <span class="reviews">(1.7k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
+              <?php if (empty($destinations)): ?>
+                <div class="col-12">
+                  <div class="no-results" style="display:block;">
+                    <i class="fas fa-search"></i>
+                    <h3>No destinations found</h3>
+                    <p>Try adjusting your search criteria or filters</p>
+                  </div>
                 </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha temples heritage" data-name="Konark Sun Temple">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=200&fit=crop" alt="Konark Sun Temple">
-                            <div class="price-tag">₹1,899</div>
-                            <div class="category-tag">Heritage</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Konark, Odisha</div>
-                            <a href="#" class="destination-title">Konark Sun Temple</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.8</span>
-                                <span class="reviews">(2.1k Reviews)</span>
-                            </div>
-                        </div>
+              <?php else: ?>
+                <?php foreach ($destinations as $d):
+                  $title   = htmlspecialchars($d['title']);
+                  $loc     = htmlspecialchars($d['location']);
+                  $cat     = htmlspecialchars($d['category']);
+                  $catSlug = cat_slug($d['category']);
+                  $price   = number_format((float)$d['price']);
+                  $img     = htmlspecialchars($d['image_url']);
+                  $search  = htmlspecialchars($d['title'].' '.$d['location'].' '.$d['category']);
+                ?>
+                <div class="col-lg-4 col-md-6 destination-item" data-category="<?= $catSlug ?>" data-name="<?= $search ?>">
+                  <div class="destination-box">
+                    <figure>
+                      <img src="<?= $img ?>" alt="<?= $title ?>">
+                      <div class="price-tag">₹<?= $price ?></div>
+                      <div class="category-tag"><?= $cat ?></div>
+                    </figure>
+                    <div class="bottom-con">
+                      <div class="location"><?= $loc ?></div>
+                      <a href="#" class="destination-title"><?= $title ?></a>
+                      <div class="rating">
+                        <i class="fa-solid fa-star"></i>
+                        <span>4.8</span>
+                        <span class="reviews">(1k+ Reviews)</span>
+                      </div>
                     </div>
+                    <button class="view-trip-btn book-now-btn"
+                            data-activity-id="<?= (int)$d['id'] ?>"
+                            data-activity-title="<?= $title ?>">
+                      Book Now
+                    </button>
+                  </div>
                 </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha nature" data-name="Chilika Lake Satapada">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Chilika Lake">
-                            <div class="price-tag">₹2,499</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Chilika Lake, Odisha</div>
-                            <a href="#" class="destination-title">Satapada Dolphin Point</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.7</span>
-                                <span class="reviews">(1.3k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha heritage" data-name="Raghurajpur Heritage Village">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop" alt="Heritage Village">
-                            <div class="price-tag">₹1,599</div>
-                            <div class="category-tag">Heritage</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Raghurajpur, Odisha</div>
-                            <a href="#" class="destination-title">Heritage Crafts Village</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.6</span>
-                                <span class="reviews">(892 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha temples" data-name="Bhubaneswar Lingaraja Temple">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1605538883669-825200433431?w=400&h=200&fit=crop" alt="Bhubaneswar Temples">
-                            <div class="price-tag">₹1,999</div>
-                            <div class="category-tag">Temple</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Bhubaneswar, Odisha</div>
-                            <a href="#" class="destination-title">Lingaraja Temple & Old Town</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.5</span>
-                                <span class="reviews">(1.1k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="odisha nature" data-name="Simlipal National Park">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop" alt="Simlipal National Park">
-                            <div class="price-tag">₹3,499</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Mayurbhanj, Odisha</div>
-                            <a href="#" class="destination-title">Simlipal National Park</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.4</span>
-                                <span class="reviews">(756 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- West Bengal Destinations -->
-                <div class="col-lg-4 col-md-6 destination-item" data-category="west-bengal heritage" data-name="Kolkata Victoria Memorial">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop" alt="Victoria Memorial">
-                            <div class="price-tag">₹3,999</div>
-                            <div class="category-tag">Heritage</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Kolkata, West Bengal</div>
-                            <a href="#" class="destination-title">Victoria Memorial & City of Joy</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.8</span>
-                                <span class="reviews">(2.3k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="west-bengal nature" data-name="Darjeeling Himalayan Railway">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Darjeeling">
-                            <div class="price-tag">₹5,999</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Darjeeling, West Bengal</div>
-                            <a href="#" class="destination-title">Himalayan Railway & Tea Gardens</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.9</span>
-                                <span class="reviews">(3.2k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="west-bengal nature" data-name="Sundarbans Mangrove Forest">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop" alt="Sundarbans">
-                            <div class="price-tag">₹4,299</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Sundarbans, West Bengal</div>
-                            <a href="#" class="destination-title">Mangrove Forest & Royal Bengal Tigers</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.6</span>
-                                <span class="reviews">(1.8k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Jharkhand Destinations -->
-                <div class="col-lg-4 col-md-6 destination-item" data-category="jharkhand nature" data-name="Betla National Park">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop" alt="Betla National Park">
-                            <div class="price-tag">₹2,799</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Palamu, Jharkhand</div>
-                            <a href="#" class="destination-title">Betla National Park</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.3</span>
-                                <span class="reviews">(654 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="jharkhand nature" data-name="Ranchi Waterfalls">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Ranchi Waterfalls">
-                            <div class="price-tag">₹2,199</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Ranchi, Jharkhand</div>
-                            <a href="#" class="destination-title">Dassam & Hundru Falls</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.2</span>
-                                <span class="reviews">(892 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Andhra Pradesh Destinations -->
-                <div class="col-lg-4 col-md-6 destination-item" data-category="andhra-pradesh temples" data-name="Tirupati Balaji Temple">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&h=200&fit=crop" alt="Tirupati">
-                            <div class="price-tag">₹4,999</div>
-                            <div class="category-tag">Temple</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Tirupati, Andhra Pradesh</div>
-                            <a href="#" class="destination-title">Venkateswara Temple</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.9</span>
-                                <span class="reviews">(5.2k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="andhra-pradesh beaches" data-name="Visakhapatnam Beaches">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Visakhapatnam Beach">
-                            <div class="price-tag">₹3,299</div>
-                            <div class="category-tag">Beach</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Visakhapatnam, Andhra Pradesh</div>
-                            <a href="#" class="destination-title">RK Beach & Araku Valley</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.5</span>
-                                <span class="reviews">(1.9k Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chhattisgarh Destinations -->
-                <div class="col-lg-4 col-md-6 destination-item" data-category="chhattisgarh nature" data-name="Chitrakote Falls">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Chitrakote Falls">
-                            <div class="price-tag">₹2,699</div>
-                            <div class="category-tag">Nature</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Bastar, Chhattisgarh</div>
-                            <a href="#" class="destination-title">Chitrakote Falls - Niagara of India</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.4</span>
-                                <span class="reviews">(723 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 destination-item" data-category="chhattisgarh heritage" data-name="Sirpur Archaeological Site">
-                    <div class="destination-box">
-                        <figure>
-                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=200&fit=crop" alt="Sirpur">
-                            <div class="price-tag">₹1,999</div>
-                            <div class="category-tag">Heritage</div>
-                        </figure>
-                        <div class="bottom-con">
-                            <div class="location">Sirpur, Chhattisgarh</div>
-                            <a href="#" class="destination-title">Ancient Buddhist Temples</a>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.1</span>
-                                <span class="reviews">(456 Reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </div>
             
             <div class="no-results" id="noResults" style="display: none;">
@@ -562,6 +417,73 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+        (function(){
+          function openBookingModal(activityId, activityTitle){
+            document.getElementById('bk_activity_id').value = activityId;
+            document.getElementById('bk_activity_title').value = activityTitle;
+            document.getElementById('bk_activity_title_display').value = activityTitle;
+            const alertBox = document.getElementById('bk_alert');
+            if (alertBox) alertBox.className = 'alert d-none';
+            if (window.jQuery && $('#bookingModal').modal) {
+              $('#bookingModal').modal('show');
+            } else {
+              var modalEl = document.getElementById('bookingModal');
+              modalEl.style.display = 'block';
+            }
+          }
+
+          document.addEventListener('click', function(e){
+            const btn = e.target.closest('.book-now-btn');
+            if (!btn) return;
+            e.preventDefault();
+            const id = btn.getAttribute('data-activity-id');
+            const title = btn.getAttribute('data-activity-title');
+            openBookingModal(id, title);
+          });
+
+          // Set min date = today
+          const dateInput = document.getElementById('bk_date');
+          if (dateInput) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth()+1).padStart(2,'0');
+            const dd = String(today.getDate()).padStart(2,'0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+          }
+
+          const form = document.getElementById('bookingForm');
+          if (form) {
+            form.addEventListener('submit', async function(e){
+              e.preventDefault();
+              const submitBtn = document.getElementById('bk_submit');
+              const alertBox = document.getElementById('bk_alert');
+              alertBox.className = 'alert d-none';
+              submitBtn.disabled = true;
+              try {
+                const fd = new FormData(form);
+                const res = await fetch('process/activity_booking.php', {
+                  method: 'POST',
+                  body: fd
+                });
+                const data = await res.json();
+                if (data.success) {
+                  alertBox.className = 'alert alert-success';
+                  alertBox.textContent = data.message || 'Booking submitted successfully!';
+                  form.reset();
+                } else {
+                  alertBox.className = 'alert alert-danger';
+                  alertBox.textContent = data.message || 'Failed to submit booking.';
+                }
+              } catch(err) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Network or server error. Please try again.';
+              } finally {
+                submitBtn.disabled = false;
+              }
+            });
+          }
+        })();
+
         class DestinationFilter {
             constructor() {
                 this.destinations = document.querySelectorAll('.destination-item');

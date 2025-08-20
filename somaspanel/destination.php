@@ -32,6 +32,18 @@
 
     <section class="section">
       <?php
+        // Flash message from redirects
+        $flashStatus = isset($_GET['status']) ? $_GET['status'] : '';
+        $flashMsg = isset($_GET['msg']) ? $_GET['msg'] : '';
+        if ($flashStatus):
+      ?>
+        <div class="alert alert-<?= $flashStatus === 'success' ? 'success' : 'danger' ?> alert-dismissible fade show" role="alert">
+          <strong><?= $flashStatus === 'success' ? 'Success' : 'Error' ?>:</strong>
+          <?= htmlspecialchars($flashMsg !== '' ? $flashMsg : ($flashStatus === 'success' ? 'Saved successfully.' : 'Operation failed.')) ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <?php endif; ?>
+      <?php
         // DB connection
         require_once __DIR__ . '/config/config.php';
 
@@ -51,10 +63,19 @@
 
         // Fetch destinations
         $destinations = [];
-        $sql = "SELECT id, title, location, category, price, image_url, short_desc, status, created_at, updated_at FROM destinations ORDER BY id DESC";
+        // Select only columns we use in the table to avoid legacy schema issues
+        $sql = "SELECT id, title, location, category, price, image_url, short_desc, status FROM destinations ORDER BY id DESC";
+        $destQueryOk = false;
         if ($result = $conn->query($sql)) {
+          $destQueryOk = true;
           while ($row = $result->fetch_assoc()) { $destinations[] = $row; }
           $result->free();
+        }
+        if (!$destQueryOk) {
+          echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
+             . '<strong>DB Error:</strong> ' . htmlspecialchars($conn->error) .
+             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+             . '</div>';
         }
       ?>
 
