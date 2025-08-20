@@ -558,108 +558,59 @@
                     <!-- Special Deals -->
                     <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="deal-tab">
                         <div class="owl-carousel">
-                            <!-- Nepal -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> Nepal, Philippines</span>
-                                    <h6><a href="destinations.html">Experience a Jungle Safari in Chitwan National Park, Nepal</a></h6>
-                                    <img class="img-fluid" alt="Nepal Safari" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 6 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹1200</del> ₹1100</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Japan -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> Japan</span>
-                                    <h6><a href="destinations.html">Explore the Rich Heritage of Kyoto’s Temples in Japan</a></h6>
-                                    <img class="img-fluid" alt="Kyoto Japan" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 10 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹900</del> ₹700</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Sri Lanka -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> Colombo, India, Sri Lanka</span>
-                                    <h6><a href="destinations.html">Wander India’s Palaces and Markets Journey Through Jaipur</a></h6>
-                                    <img class="img-fluid" alt="Jaipur Palaces" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 8 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹700</del> ₹600</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
+                            <?php
+                            // Fetch latest 5 active destinations for homepage carousel
+                            require_once __DIR__ . '/config/config.php';
+                            if (!isset($conn) || !($conn instanceof mysqli)) {
+                                $servername = "localhost";
+                                $username = "root";
+                                $password = "";
+                                $dbname = "shreekshetra_travels";
+                                $conn = @new mysqli($servername, $username, $password, $dbname);
+                                if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+                            }
+
+                            $latestDestinations = [];
+                            if ($conn && !$conn->connect_error) {
+                                $sql = "SELECT id, title, location, category, price, image_url FROM destinations WHERE status=1 ORDER BY id DESC LIMIT 5";
+                                if ($res = $conn->query($sql)) {
+                                    while ($row = $res->fetch_assoc()) { $latestDestinations[] = $row; }
+                                    $res->free();
+                                }
+                            }
+                            ?>
+                            <?php if (!empty($latestDestinations)): ?>
+                                <?php foreach ($latestDestinations as $d):
+                                    $title = htmlspecialchars($d['title']);
+                                    $loc = htmlspecialchars($d['location']);
+                                    $cat = htmlspecialchars($d['category']);
+                                    $img = htmlspecialchars($d['image_url']);
+                                    $price = number_format((float)$d['price']);
+                                ?>
+                                <div class="item">
+                                    <div class="package-box">
+                                        <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> <?= $loc ?></span>
+                                        <h6><a href="destinations.php"><?= $title ?></a></h6>
+                                        <img class="img-fluid" alt="<?= $title ?>" src="<?= $img ?>">
+                                        <div class="spans-wrapper">
+                                            <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> <?= $cat ?></span>
+                                        </div>
+                                        <div class="pkg-btn-con d-flex align-items-center justify-content-between">
+                                            <span class="person d-inline-block p-0 m-0">
+                                                <span class="price d-inline-block p-0 m-0">₹<?= $price ?></span>
+                                            </span>
+                                            <div class="grey-btn d-inline-block"><a href="destinations.php">View Availability</a></div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Bhutan -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> Bhutan</span>
-                                    <h6><a href="destinations.html">Hike to Bhutan’s Tiger’s Nest and Uncover its Spiritual Mystique</a></h6>
-                                    <img class="img-fluid" alt="Bhutan Tiger Nest" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 6 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹1900</del> ₹1700</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="item">
+                                    <div class="package-box text-center p-4">
+                                        <h6 class="mb-0">No destinations available right now.</h6>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- South India -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> India</span>
-                                    <h6><a href="destinations.html">Sail Through the Backwaters and Temples of Kerala in South India</a></h6>
-                                    <img class="img-fluid" alt="Kerala Backwaters" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 4 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹900</del> ₹800</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Maldives -->
-                            <div class="item">
-                                <div class="package-box">
-                                    <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> Japan</span>
-                                    <h6><a href="destinations.html">Snorkel the Vibrant Coral Reefs and Lagoons in the Maldives</a></h6>
-                                    <img class="img-fluid" alt="Maldives Snorkel" src="pexels-jaime-reimer-1376930-2662116.jpg">
-                                    <div class="spans-wrapper">
-                                        <span class="d-inline-block"><i class="fas fa-calendar-alt"></i> 6 Nights</span>
-                                    </div>
-                                    <div class="pkg-btn-con d-flex align-items-center justify-content-between">
-                                        <span class="person d-inline-block p-0 m-0">
-                                            <span class="price d-inline-block p-0 m-0"><del>₹1200</del> ₹1000</span>
-                                        </span>
-                                        <div class="grey-btn d-inline-block"><a href="booking.html">View Availability</a></div>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -786,85 +737,66 @@
                 <h2 class="">Discover the Spiritual & Coastal <br> Beauty of Puri</h2>
             </div>
             <div class="owl-carousel">
+                <?php
+                // Build/Reuse DB connection (reuse $conn if already set earlier)
+                if (!isset($conn) || !($conn instanceof mysqli) || $conn->connect_error) {
+                    require_once __DIR__ . '/config/config.php';
+                    if (!isset($conn) || !($conn instanceof mysqli)) {
+                        $servername = "localhost";
+                        $username = "root";
+                        $password = "";
+                        $dbname = "shreekshetra_travels";
+                        $conn = @new mysqli($servername, $username, $password, $dbname);
+                        if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+                    }
+                }
 
-                <!-- Jagannath Temple -->
-                <div class="item">
-                    <div class="destination-box position-relative">
-                        <div class="orange-tag position-absolute">₹499</div>
-                        <figure><img src="odisha-puri.jpg" alt="Jagannath Temple Puri" class="img-fluid"></figure>
-                        <div class="bottom-con">
-                            <span class="d-block text-uppercase">Jagannath Temple</span>
-                            <a href="destinations.html">
-                                <h4>Experience the divinity of Lord Jagannath</h4>
-                            </a>
-                            <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 5.0 <span class="d-inline-block review-span">(3k Reviews)</span></span>
+                $puriDestinations = [];
+                if ($conn && !$conn->connect_error) {
+                    $sql = "SELECT id, title, location, category, price, image_url
+                            FROM destinations
+                            WHERE status=1 AND (location LIKE '%Puri%' OR title LIKE '%Puri%')
+                            ORDER BY id DESC";
+                    if ($res = $conn->query($sql)) {
+                        while ($row = $res->fetch_assoc()) { $puriDestinations[] = $row; }
+                        $res->free();
+                    }
+                }
+                ?>
+
+                <?php if (!empty($puriDestinations)): ?>
+                    <?php foreach ($puriDestinations as $d):
+                        $title = htmlspecialchars($d['title']);
+                        $loc   = htmlspecialchars($d['location']);
+                        $price = number_format((float)$d['price']);
+                        $img   = htmlspecialchars($d['image_url']);
+                    ?>
+                    <div class="item">
+                        <div class="destination-box position-relative">
+                            <div class="orange-tag position-absolute">₹<?= $price ?></div>
+                            <figure><img src="<?= $img ?>" alt="<?= $title ?>" class="img-fluid"></figure>
+                            <div class="bottom-con">
+                                <span class="d-block text-uppercase"><?= $loc ?></span>
+                                <a href="destinations.php">
+                                    <h4><?= $title ?></h4>
+                                </a>
+                                <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1k+ Reviews)</span></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Konark Sun Temple -->
-                <div class="item">
-                    <div class="destination-box position-relative">
-                        <div class="orange-tag position-absolute">₹399</div>
-                        <figure><img src="odisha-puri.jpg" alt="Konark Sun Temple" class="img-fluid"></figure>
-                        <div class="bottom-con">
-                            <span class="d-block text-uppercase">Konark, Odisha</span>
-                            <a href="destinations.html">
-                                <h4>Marvel at the UNESCO World Heritage Sun Temple</h4>
-                            </a>
-                            <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.9 <span class="d-inline-block review-span">(2.1k Reviews)</span></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="item">
+                        <div class="destination-box position-relative p-4 text-center">
+                            <h6 class="mb-0">No Puri destinations available right now.</h6>
                         </div>
                     </div>
-                </div>
-
-                <!-- Golden Beach -->
-                <div class="item">
-                    <div class="destination-box position-relative">
-                        <div class="orange-tag position-absolute">₹299</div>
-                        <figure><img src="odisha-puri.jpg" alt="Golden Beach Puri" class="img-fluid"></figure>
-                        <div class="bottom-con">
-                            <span class="d-block text-uppercase">Golden Beach</span>
-                            <a href="destinations.html">
-                                <h4>Relax at the Blue Flag certified beach</h4>
-                            </a>
-                            <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1.5k Reviews)</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chilika Lake -->
-                <div class="item">
-                    <div class="destination-box position-relative">
-                        <div class="orange-tag position-absolute">₹349</div>
-                        <figure><img src="odisha-puri.jpg" alt="Chilika Lake" class="img-fluid"></figure>
-                        <div class="bottom-con">
-                            <span class="d-block text-uppercase">Chilika Lake</span>
-                            <a href="destinations.html">
-                                <h4>Witness dolphins & migratory birds</h4>
-                            </a>
-                            <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.9 <span class="d-inline-block review-span">(2.8k Reviews)</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Raghurajpur Heritage Village -->
-                <div class="item">
-                    <div class="destination-box position-relative">
-                        <div class="orange-tag position-absolute">₹199</div>
-                        <figure><img src="odisha-puri.jpg" alt="Raghurajpur Heritage Village" class="img-fluid"></figure>
-                        <div class="bottom-con">
-                            <span class="d-block text-uppercase">Raghurajpur Village</span>
-                            <a href="destinations.html">
-                                <h4>Explore Odisha’s traditional Pattachitra art</h4>
-                            </a>
-                            <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.7 <span class="d-inline-block review-span">(1.2k Reviews)</span></span>
-                        </div>
-                    </div>
-                </div>
+                <?php endif; ?>
 
             </div>
         </div>
     </section>
+
 
 
 
