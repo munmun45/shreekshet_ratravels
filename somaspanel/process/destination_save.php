@@ -35,6 +35,7 @@ $location   = isset($_POST['location']) ? trim($_POST['location']) : '';
 $category   = isset($_POST['category']) ? trim($_POST['category']) : '';
 $price      = isset($_POST['price']) ? (float)$_POST['price'] : 0.0;
 $existing_image  = isset($_POST['existing_image_url']) ? trim($_POST['existing_image_url']) : '';
+$cropped_dataurl = isset($_POST['cropped_image']) ? trim($_POST['cropped_image']) : '';
 $short_desc = isset($_POST['short_desc']) ? trim($_POST['short_desc']) : '';
 $status     = isset($_POST['status']) ? (int)$_POST['status'] : 1;
 
@@ -45,7 +46,30 @@ if ($title === '' || $location === '' || $category === '' || $short_desc === '')
 
 // Handle image upload (optional on edit)
 $image_url = $existing_image; // default to existing
-if (isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['image_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+
+// 1) If cropped image data URL provided, prefer it
+if ($cropped_dataurl !== '') {
+    // Expect formats like: data:image/png;base64,XXXXX
+    if (preg_match('/^data:(image\/(png|jpeg|jpg|webp));base64,(.+)$/i', $cropped_dataurl, $m)) {
+        $mime = strtolower($m[1]);
+        $sub  = strtolower($m[2]);
+        $base64 = $m[3];
+        $ext = $sub === 'jpeg' ? 'jpg' : ($sub === 'jpg' ? 'jpg' : ($sub === 'png' ? 'png' : 'webp'));
+        $bin = base64_decode($base64);
+        if ($bin !== false) {
+            $destDir = __DIR__ . '/../../assets/images/destinations';
+            if (!is_dir($destDir)) { @mkdir($destDir, 0775, true); }
+            $filename = 'dst_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+            $targetPath = $destDir . '/' . $filename;
+            if (@file_put_contents($targetPath, $bin) !== false) {
+                $image_url = 'assets/images/destinations/' . $filename;
+            }
+        }
+    }
+}
+
+// 2) Else, fall back to raw file upload if present
+if ($cropped_dataurl === '' && isset($_FILES['image_file']) && is_array($_FILES['image_file']) && $_FILES['image_file']['error'] !== UPLOAD_ERR_NO_FILE) {
     $file = $_FILES['image_file'];
     if ($file['error'] !== UPLOAD_ERR_OK) {
         dlog('Upload error code: ' . $file['error']);

@@ -164,11 +164,11 @@
                   <div class="col-md-12">
                     <label class="form-label">Image</label>
                     <input type="file" class="form-control" name="image_file" id="dest_image_file" accept="image/*">
-                    <small class="text-muted">Upload a JPG/PNG/WebP image (max ~5MB). If left empty on Edit, the existing image will be kept.</small>
-                  </div>
-                  <div class="col-md-12">
+                    <input type="hidden" name="cropped_image" id="cropped_image">
+                    <small class="text-muted d-block mb-2">Upload a JPG/PNG/WebP image (max ~5MB). After selecting, crop will open automatically.</small>
                     <img id="dest_image_preview" src="" alt="Preview" style="max-height:150px; display:none; border:1px solid #eee; padding:4px; border-radius:6px;" />
                   </div>
+                  
                   <div class="col-md-12">
                     <label class="form-label">Short Description</label>
                     <textarea class="form-control" name="short_desc" id="dest_short_desc" rows="3" required></textarea>
@@ -187,6 +187,28 @@
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cropper Modal -->
+      <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div style="max-height:60vh; overflow:auto">
+                <img id="cropperImage" src="#" alt="To crop" style="max-width:100%; display:block;">
+              </div>
+              <small class="text-muted d-block mt-2">Aspect ratio 16:9. Drag to select the area. Use mouse wheel or pinch to zoom.</small>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="cropperApplyBtn">Crop & Use</button>
+            </div>
           </div>
         </div>
       </div>
@@ -241,9 +263,88 @@
 
   <?= require("./config/footer.php") ?>
 
+  <!-- Cropper.js CSS/JS -->
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
+  <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
 
+  <script>
+    (function(){
+      let cropper = null;
+      const fileInput = document.getElementById('dest_image_file');
+      const preview = document.getElementById('dest_image_preview');
+      const hiddenInput = document.getElementById('cropped_image');
+      const imgEl = document.getElementById('cropperImage');
+      const applyBtn = document.getElementById('cropperApplyBtn');
+      const modalEl = document.getElementById('cropperModal');
+      let bsModal = null;
 
+      function openModal(){
+        if (!bsModal) {
+          bsModal = new bootstrap.Modal(modalEl);
+        }
+        bsModal.show();
+      }
 
+      function destroyCropper(){
+        if (cropper) { cropper.destroy(); cropper = null; }
+      }
+
+      function initCropper(){
+        destroyCropper();
+        cropper = new Cropper(imgEl, {
+          aspectRatio: 16/9, // enforced 16:9 ratio as recommended
+          viewMode: 1,
+          autoCropArea: 1,
+          movable: true,
+          zoomable: true,
+          rotatable: false,
+          scalable: false,
+        });
+      }
+
+      fileInput.addEventListener('change', function(){
+        const file = this.files && this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e){
+          imgEl.src = e.target.result;
+          // Clear previous hidden input and preview
+          hiddenInput.value = '';
+          preview.style.display = 'none';
+          // Open modal after image is set
+          imgEl.onload = function(){
+            initCropper();
+            openModal();
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+
+      applyBtn.addEventListener('click', function(){
+        if (!cropper) return;
+        // Get a decent sized canvas (limit size to avoid huge files)
+        const canvas = cropper.getCroppedCanvas({
+          maxWidth: 1600,
+          maxHeight: 1600,
+        });
+        if (!canvas) return;
+        // Convert to dataURL (use image/jpeg for better compression)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        hiddenInput.value = dataUrl;
+        // Update preview
+        preview.src = dataUrl;
+        preview.style.display = 'inline-block';
+        // Close modal
+        if (bsModal) { bsModal.hide(); }
+        destroyCropper();
+      });
+
+      // Clear cropper on modal hide
+      modalEl.addEventListener('hidden.bs.modal', function(){
+        destroyCropper();
+      });
+    })();
+  </script>
 </body>
 
 </html>

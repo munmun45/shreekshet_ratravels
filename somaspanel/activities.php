@@ -135,9 +135,8 @@
                   <div class="col-md-12">
                     <label class="form-label">Image</label>
                     <input type="file" class="form-control" name="image_file" id="form_image_file" accept="image/*">
-                    <small class="text-muted">Upload a JPG/PNG/WebP image (max ~5MB). If left empty on Edit, the existing image will be kept.</small>
-                  </div>
-                  <div class="col-md-12">
+                    <input type="hidden" name="cropped_image" id="form_cropped_image">
+                    <small class="text-muted d-block mb-2">Upload a JPG/PNG/WebP image (max ~5MB). After selecting, crop (16:9) will open automatically. If left empty on Edit, the existing image will be kept.</small>
                     <img id="form_image_preview" src="" alt="Preview" style="max-height:150px; display:none; border:1px solid #eee; padding:4px; border-radius:6px;" />
                   </div>
                   <div class="col-md-12">
@@ -162,6 +161,32 @@
         </div>
       </div>
 
+      <!-- Cropper Modal -->
+      <div class="modal fade" id="activityCropperModal" tabindex="-1" aria-labelledby="activityCropperModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="activityCropperModalLabel">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div style="max-height:60vh; overflow:auto">
+                <img id="activityCropperImage" src="#" alt="To crop" style="max-width:100%; display:block;">
+              </div>
+              <small class="text-muted d-block mt-2">Aspect ratio 16:9. Drag to select the area. Use mouse wheel or pinch to zoom.</small>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="activityCropperApplyBtn">Crop & Use</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cropper.js CSS/JS -->
+      <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
+      <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
       <script>
         function clearForm(){
           document.getElementById('form_id').value = '';
@@ -173,6 +198,8 @@
           const f = document.getElementById('form_image_file');
           if (f) { f.value = ''; }
           document.getElementById('form_existing_image_url').value = '';
+          const hid = document.getElementById('form_cropped_image');
+          if (hid) { hid.value = ''; }
           const prev = document.getElementById('form_image_preview');
           if (prev) { prev.src = ''; prev.style.display = 'none'; }
           document.getElementById('form_short_desc').value = '';
@@ -198,6 +225,60 @@
           var modal = new bootstrap.Modal(document.getElementById('activityModal'));
           modal.show();
         }
+
+        // Cropper.js logic
+        (function(){
+          let cropper = null;
+          const fileInput = document.getElementById('form_image_file');
+          const preview = document.getElementById('form_image_preview');
+          const hiddenInput = document.getElementById('form_cropped_image');
+          const imgEl = document.getElementById('activityCropperImage');
+          const applyBtn = document.getElementById('activityCropperApplyBtn');
+          const modalEl = document.getElementById('activityCropperModal');
+          let bsModal = null;
+
+          function openModal(){
+            if (!bsModal) { bsModal = new bootstrap.Modal(modalEl); }
+            bsModal.show();
+          }
+          function destroyCropper(){ if (cropper) { cropper.destroy(); cropper = null; } }
+          function initCropper(){
+            destroyCropper();
+            cropper = new Cropper(imgEl, {
+              aspectRatio: 16/9,
+              viewMode: 1,
+              autoCropArea: 1,
+              movable: true,
+              zoomable: true,
+              rotatable: false,
+              scalable: false,
+            });
+          }
+          fileInput.addEventListener('change', function(){
+            const file = this.files && this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e){
+              imgEl.src = e.target.result;
+              hiddenInput.value = '';
+              preview.style.display = 'none';
+              imgEl.onload = function(){ initCropper(); openModal(); };
+            };
+            reader.readAsDataURL(file);
+          });
+          applyBtn.addEventListener('click', function(){
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 });
+            if (!canvas) return;
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            hiddenInput.value = dataUrl;
+            preview.src = dataUrl;
+            preview.style.display = 'inline-block';
+            if (bsModal) { bsModal.hide(); }
+            destroyCropper();
+          });
+          modalEl.addEventListener('hidden.bs.modal', function(){ destroyCropper(); });
+        })();
       </script>
 
     </section>

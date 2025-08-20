@@ -35,7 +35,14 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="booking">
                 <i class="bi bi-calendar-event"></i>
-                <span>Booking Manager</span>
+                <span>Activity & Destination Bookings</span>
+            </a>
+        </li>
+      
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="booking-hotel">
+                <i class="bi bi-calendar-event"></i>
+                <span>Hotel Booking Manager</span>
             </a>
         </li>
 

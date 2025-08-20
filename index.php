@@ -9,6 +9,49 @@
     <?php include 'config/meta.php'; ?>
 
 
+    <style>
+      /* Base Book Now button styling */
+      .book-now-btn{
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff !important;
+        padding: 8px 18px;
+        border-radius: 20px;
+        border: none;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
+        cursor: pointer;
+        line-height: 1.2;
+      }
+      .book-now-btn:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(118, 75, 162, 0.4);
+        opacity: 0.95;
+      }
+      .book-now-btn:active{
+        transform: translateY(0);
+        box-shadow: 0 6px 16px rgba(118, 75, 162, 0.35);
+      }
+      /* Positioning in destination cards */
+      .destination-box { position: relative; }
+      .destination-box .book-now-btn{
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+      }
+      /* Inline in latest packages row */
+      .pkg-btn-con .book-now-btn{
+        position: static;
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 18px;
+        box-shadow: 0 6px 16px rgba(118, 75, 162, 0.25);
+      }
+    </style>
+
 </head>
 
 <body>
@@ -47,9 +90,7 @@
                                     <h4>Welcome to Shreekshetra Travels <i class="fa-solid fa-earth-americas"></i></h4>
                                     <h1>Plan Your Divine Journey with Us!</h1>
                                     <p class="font-size-20">Experience seamless travel services to sacred places and beyond.</p>
-                                    <div class="green-btn d-inline-block">
-                                        <a href="about.html" class="d-inline-block">Book Now</a>
-                                    </div>
+                                   
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -69,7 +110,7 @@
                                     <h1>Comfortable Trips, Divine Blessings</h1>
                                     <p class="font-size-20">From Puri Jagannath Dham to pan-India pilgrimages, we take you closer to divinity.</p>
                                     <div class="green-btn d-inline-block">
-                                        <a href="about.html" class="d-inline-block">Explore Packages</a>
+                                        <a href="./activities.php" class="d-inline-block">Explore Packages</a>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +131,7 @@
                                     <h1>Your Trusted Travel Companion</h1>
                                     <p class="font-size-20">Safe rides, affordable packages, and unforgettable journeys for families and groups.</p>
                                     <div class="green-btn d-inline-block">
-                                        <a href="about.html" class="d-inline-block">Start Your Journey</a>
+                                        <a href="./destination.php" class="d-inline-block">Start Your Journey</a>
                                     </div>
                                 </div>
                             </div>
@@ -194,282 +235,23 @@
                             <!-- tab-inner-con -->
                         </div>
                         <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
+                            <a href="#" class="d-inline-block hotel-book-now-btn">Book Now</a>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="car" role="tabpanel" aria-labelledby="car-tab">
-                        <div class="tab-inner-con text-left">
-                            <div class="destination-con">
-                                <label for="destination2">Destination</label>
-                                <input type="text" class="form-control" placeholder="" id="destination2">
-                                <!-- col -->
-                            </div>
-                            <div class="checkin-con">
-                                <label for="checkin2">Check in</label>
-                                <input type="date" class="form-control" id="checkin2" name="checkin" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="checkout-con">
-                                <label for="checkout2">Check Out</label>
-                                <input type="date" class="form-control" id="checkout2" name="checkout" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="adults-con">
-                                <label for="adults2">Adults </label>
-                                <select class="form-select" id="adults2" onchange="javascript: dynamicDropDown(this.options[this.selectedIndex].value);">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <div class="children-con">
-                                <label for="children2">Children </label>
-                                <select class="form-select" id="children2">
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <!-- tab-inner-con -->
-                        </div>
-                        <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
-                        </div>
-                        <!-- car tab -->
+                        
                     </div>
                     <div class="tab-pane fade" id="flight" role="tabpanel" aria-labelledby="flight-tab">
-                        <div class="tab-inner-con text-left">
-
-                            <div class="destination-con">
-                                <label for="destination3">Destination</label>
-                                <input type="text" class="form-control" placeholder="" id="destination3">
-                                <!-- col -->
-                            </div>
-                            <div class="checkin-con">
-                                <label for="checkin3">Check in</label>
-                                <input type="date" class="form-control" id="checkin3" name="checkin" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="checkout-con">
-                                <label for="checkout3">Check Out</label>
-                                <input type="date" class="form-control" id="checkout3" name="checkout" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="adults-con">
-                                <label for="adults3">Adults </label>
-                                <select class="form-select" id="adults3" onchange="javascript: dynamicDropDown(this.options[this.selectedIndex].value);">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <div class="children-con">
-                                <label for="children3">Children </label>
-                                <select class="form-select" id="children3">
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <!-- tab-inner-con -->
-                        </div>
-                        <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
-                        </div>
-                        <!-- flight tab -->
+                        
                     </div>
                     <div class="tab-pane fade" id="trip" role="tabpanel" aria-labelledby="trip-tab">
-                        <div class="tab-inner-con text-left">
-
-                            <div class="destination-con">
-                                <label for="destination4">Destination</label>
-                                <input type="text" class="form-control" placeholder="" id="destination4">
-                                <!-- col -->
-                            </div>
-                            <div class="checkin-con">
-                                <label for="checkin4">Check in</label>
-                                <input type="date" class="form-control" id="checkin4" name="checkin" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="checkout-con">
-                                <label for="checkout4">Check Out</label>
-                                <input type="date" class="form-control" id="checkout4" name="checkout" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="adults-con">
-                                <label for="adults4">Adults </label>
-                                <select class="form-select" id="adults4" onchange="javascript: dynamicDropDown(this.options[this.selectedIndex].value);">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <div class="children-con">
-                                <label for="children4">Children </label>
-                                <select class="form-select" id="children4">
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <!-- tab-inner-con -->
-                        </div>
-                        <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
-                        </div>
-                        <!-- trip tab -->
+                        
                     </div>
                     <div class="tab-pane fade" id="cruise" role="tabpanel" aria-labelledby="cruise-tab">
-                        <div class="tab-inner-con text-left">
-
-                            <div class="destination-con">
-                                <label for="destination5">Destination</label>
-                                <input type="text" class="form-control" placeholder="" id="destination5">
-                                <!-- col -->
-                            </div>
-                            <div class="checkin-con">
-                                <label for="checkin5">Check in</label>
-                                <input type="date" class="form-control" id="checkin5" name="checkin" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="checkout-con">
-                                <label for="checkout5">Check Out</label>
-                                <input type="date" class="form-control" id="checkout5" name="checkout" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="adults-con">
-                                <label for="adults5">Adults </label>
-                                <select class="form-select" id="adults5" onchange="javascript: dynamicDropDown(this.options[this.selectedIndex].value);">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <div class="children-con">
-                                <label for="children5">Children </label>
-                                <select class="form-select" id="children5">
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <!-- tab-inner-con -->
-                        </div>
-                        <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
-                        </div>
-                        <!-- cruise tab -->
+                        
                     </div>
                     <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
-                        <div class="tab-inner-con text-left">
-
-                            <div class="destination-con">
-                                <label for="destination6">Destination</label>
-                                <input type="text" class="form-control" placeholder="" id="destination6">
-                                <!-- col -->
-                            </div>
-                            <div class="checkin-con">
-                                <label for="checkin6">Check in</label>
-                                <input type="date" class="form-control" id="checkin6" name="checkin" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="checkout-con">
-                                <label for="checkout6">Check Out</label>
-                                <input type="date" class="form-control" id="checkout6" name="checkout" required="">
-                                <!-- col -->
-                            </div>
-                            <div class="adults-con">
-                                <label for="adults6">Adults </label>
-                                <select class="form-select" id="adults6" onchange="javascript: dynamicDropDown(this.options[this.selectedIndex].value);">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <div class="children-con">
-                                <label for="children6">Children </label>
-                                <select class="form-select" id="children6">
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                                <!-- col -->
-                            </div>
-                            <!-- tab-inner-con -->
-                        </div>
-                        <div class="green-btn d-inline-block">
-                            <a href="booking.html" class="d-inline-block">Search Now</a>
-                        </div>
-                        <!-- activity tab -->
+                        
                     </div>
                 </div>
                 <!-- container -->
@@ -599,7 +381,11 @@
                                             <span class="person d-inline-block p-0 m-0">
                                                 <span class="price d-inline-block p-0 m-0">₹<?= $price ?></span>
                                             </span>
-                                            <div class="grey-btn d-inline-block"><a href="destinations.php">View Availability</a></div>
+                                            <button class="grey-btn d-inline-block book-now-btn"
+                                                    data-activity-id="<?= (int)$d['id'] ?>"
+                                                    data-activity-title="<?= $title ?>">
+                                                Book Now
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -782,6 +568,11 @@
                                 </a>
                                 <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1k+ Reviews)</span></span>
                             </div>
+                            <button class="view-trip-btn book-now-btn"
+                                    data-activity-id="<?= (int)$d['id'] ?>"
+                                    data-activity-title="<?= $title ?>">
+                                Book Now
+                            </button>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -874,7 +665,265 @@
     <!-- FOOTER SECTION -->
 
 
+    <!-- Hotel Booking Modal -->
+    <div class="modal fade" id="hotelBookingModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Hotel Booking</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <form id="hotelBookingForm">
+              <div class="mb-3" style="display:none;">
+                <label for="hb_destination" class="form-label">Destination</label>
+                <input type="text" class="form-control" id="hb_destination" name="destination" required>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3" style="display:none;">
+                  <label for="hb_checkin" class="form-label">Check-in</label>
+                  <input type="date" class="form-control" id="hb_checkin" name="checkin" required>
+                </div>
+                <div class="col-md-6 mb-3" style="display:none;">
+                  <label for="hb_checkout" class="form-label">Check-out</label>
+                  <input type="date" class="form-control" id="hb_checkout" name="checkout" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3" style="display:none;">
+                  <label for="hb_adults" class="form-label">Adults</label>
+                  <input type="number" class="form-control" id="hb_adults" name="adults" min="1" step="1" value="1" required>
+                </div>
+                <div class="col-md-6 mb-3" style="display:none;">
+                  <label for="hb_children" class="form-label">Children</label>
+                  <input type="number" class="form-control" id="hb_children" name="children" min="0" step="1" value="0">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="hb_mobile" class="form-label">Mobile Number</label>
+                <input type="tel" class="form-control" id="hb_mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required>
+              </div>
+              <div class="mb-3">
+                <label for="hb_email" class="form-label">Email (optional)</label>
+                <input type="email" class="form-control" id="hb_email" name="email" placeholder="example@domain.com">
+              </div>
+              <div id="hb_alert" class="alert d-none" role="alert"></div>
+              <button type="submit" class="btn btn-primary w-100" id="hb_submit">Submit Booking</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Book Destination</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <form id="bookingForm">
+              <input type="hidden" name="activity_id" id="bk_activity_id">
+              <input type="hidden" name="activity_title" id="bk_activity_title">
+              <div class="mb-3">
+                <label class="form-label">Destination</label>
+                <input type="text" class="form-control" id="bk_activity_title_display" disabled>
+              </div>
+              <div class="mb-3">
+                <label for="bk_date" class="form-label">Select Date</label>
+                <input type="date" class="form-control" id="bk_date" name="date" required>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="bk_adults" class="form-label">Total Adults</label>
+                  <input type="number" class="form-control" id="bk_adults" name="adults" min="1" step="1" value="1" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="bk_children" class="form-label">Total Children</label>
+                  <input type="number" class="form-control" id="bk_children" name="children" min="0" step="1" value="0">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="bk_mobile" class="form-label">Mobile Number</label>
+                <input type="tel" class="form-control" id="bk_mobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile" required>
+              </div>
+              <div class="mb-3">
+                <label for="bk_email" class="form-label">Email (optional)</label>
+                <input type="email" class="form-control" id="bk_email" name="email" placeholder="example@domain.com">
+              </div>
+              <div id="bk_alert" class="alert d-none" role="alert"></div>
+              <button type="submit" class="btn btn-primary w-100" id="bk_submit">Submit Booking</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <?php include 'config/footer.php'; ?>
+
+    <script>
+      (function(){
+        // Hotel booking open + populate from Hotel tab inputs
+        function openHotelModal(prefill){
+          const alertBox = document.getElementById('hb_alert');
+          if (alertBox) alertBox.className = 'alert d-none';
+          if (prefill){
+            const dest = document.getElementById('hb_destination');
+            const cin = document.getElementById('hb_checkin');
+            const cout = document.getElementById('hb_checkout');
+            const ad = document.getElementById('hb_adults');
+            const ch = document.getElementById('hb_children');
+            if (dest) dest.value = prefill.destination || '';
+            if (cin) cin.value = prefill.checkin || '';
+            if (cout) cout.value = prefill.checkout || '';
+            if (ad) ad.value = prefill.adults || 1;
+            if (ch) ch.value = prefill.children || 0;
+          }
+          if (window.jQuery && $('#hotelBookingModal').modal) {
+            $('#hotelBookingModal').modal('show');
+          } else {
+            var modalEl = document.getElementById('hotelBookingModal');
+            if (modalEl) modalEl.style.display = 'block';
+          }
+        }
+
+        // Hook Hotel Book Now button
+        document.addEventListener('click', function(e){
+          const btn = e.target.closest('.hotel-book-now-btn');
+          if (!btn) return;
+          e.preventDefault();
+          const prefill = {
+            destination: (document.getElementById('destination')||{}).value || '',
+            checkin: (document.getElementById('checkin')||{}).value || '',
+            checkout: (document.getElementById('checkout')||{}).value || '',
+            adults: (document.getElementById('adults')||{}).value || 1,
+            children: (document.getElementById('children')||{}).value || 0,
+          };
+          openHotelModal(prefill);
+        });
+
+        // Set min dates for hotel checkin/checkout
+        function setMinDates(){
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth()+1).padStart(2,'0');
+          const dd = String(today.getDate()).padStart(2,'0');
+          const min = `${yyyy}-${mm}-${dd}`;
+          const cin = document.getElementById('hb_checkin');
+          const cout = document.getElementById('hb_checkout');
+          if (cin) cin.min = min;
+          if (cout) cout.min = min;
+          if (cin && cout){
+            cin.addEventListener('change', function(){
+              cout.min = cin.value || min;
+              if (cout.value && cout.value < cout.min){ cout.value = cout.min; }
+            });
+          }
+        }
+        setMinDates();
+
+        // Submit hotel booking form
+        const hbForm = document.getElementById('hotelBookingForm');
+        if (hbForm){
+          hbForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const submitBtn = document.getElementById('hb_submit');
+            const alertBox = document.getElementById('hb_alert');
+            alertBox.className = 'alert d-none';
+            submitBtn.disabled = true;
+            try{
+              const fd = new FormData(hbForm);
+              const res = await fetch('process/hotel_booking.php', { method: 'POST', body: fd });
+              const data = await res.json();
+              if (data.success){
+                alertBox.className = 'alert alert-success';
+                alertBox.textContent = data.message || 'Booking submitted successfully!';
+                hbForm.reset();
+              } else {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = data.message || 'Failed to submit booking.';
+              }
+            } catch(err){
+              alertBox.className = 'alert alert-danger';
+              alertBox.textContent = 'Network or server error. Please try again.';
+            } finally {
+              submitBtn.disabled = false;
+            }
+          });
+        }
+
+        function openBookingModal(activityId, activityTitle){
+          var idEl = document.getElementById('bk_activity_id');
+          var titleEl = document.getElementById('bk_activity_title');
+          var titleDispEl = document.getElementById('bk_activity_title_display');
+          if (!idEl || !titleEl || !titleDispEl) return;
+          idEl.value = activityId;
+          titleEl.value = activityTitle;
+          titleDispEl.value = activityTitle;
+          const alertBox = document.getElementById('bk_alert');
+          if (alertBox) alertBox.className = 'alert d-none';
+          if (window.jQuery && $('#bookingModal').modal) {
+            $('#bookingModal').modal('show');
+          } else {
+            var modalEl = document.getElementById('bookingModal');
+            if (modalEl) modalEl.style.display = 'block';
+          }
+        }
+
+        document.addEventListener('click', function(e){
+          const btn = e.target.closest('.book-now-btn');
+          if (!btn) return;
+          e.preventDefault();
+          const id = btn.getAttribute('data-activity-id');
+          const title = btn.getAttribute('data-activity-title');
+          openBookingModal(id, title);
+        });
+
+        // Set min date = today
+        const dateInput = document.getElementById('bk_date');
+        if (dateInput) {
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth()+1).padStart(2,'0');
+          const dd = String(today.getDate()).padStart(2,'0');
+          dateInput.min = `${yyyy}-${mm}-${dd}`;
+        }
+
+        const form = document.getElementById('bookingForm');
+        if (form) {
+          form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const submitBtn = document.getElementById('bk_submit');
+            const alertBox = document.getElementById('bk_alert');
+            alertBox.className = 'alert d-none';
+            submitBtn.disabled = true;
+            try {
+              const fd = new FormData(form);
+              const res = await fetch('process/activity_booking.php', {
+                method: 'POST',
+                body: fd
+              });
+              const data = await res.json();
+              if (data.success) {
+                alertBox.className = 'alert alert-success';
+                alertBox.textContent = data.message || 'Booking submitted successfully!';
+                form.reset();
+              } else {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = data.message || 'Failed to submit booking.';
+              }
+            } catch(err) {
+              alertBox.className = 'alert alert-danger';
+              alertBox.textContent = 'Network or server error. Please try again.';
+            } finally {
+              submitBtn.disabled = false;
+            }
+          });
+        }
+      })();
+    </script>
 
 
 </body>
