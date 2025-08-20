@@ -160,27 +160,27 @@
 
 
         <!-- SEARCH BOOKING TAB SECTION -->
-        <div class="float-left w-100 search-booking-tab-con position-relative main-box">
+        <div class="float-left w-100 search-booking-tab-con position-relative main-box" style="margin-bottom: 50px;" >
             <div class="container wow bounceInUp" data-wow-duration="2s">
                 <ul class="nav nav-tabs text-center align-items-center justify-content-between" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="hotel-tab" data-toggle="tab" data-target="#hotel" type="button" role="tab" aria-controls="hotel" aria-selected="true"> <img class="img-fluid d-block" src="assets/images/hotel-icon.png" alt="icon"> Hotels</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link disabled" id="car-tab" data-target="#car" type="button" role="tab" aria-controls="car" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/car-rental-icon.png" alt="icon"> Car
+                        <button style="cursor: not-allowed;" class="nav-link disabled" id="car-tab" data-target="#car" type="button" role="tab" aria-controls="car" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/car-rental-icon.png" alt="icon"> Car
                             Rentals</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link disabled" id="flight-tab" data-target="#flight" type="button" role="tab" aria-controls="flight" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/flight-icon.png" alt="icon"> Flights</button>
+                        <button style="cursor: not-allowed;" class="nav-link disabled" id="flight-tab" data-target="#flight" type="button" role="tab" aria-controls="flight" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/flight-icon.png" alt="icon"> Flights</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link disabled" id="trip-tab" data-target="#trip" type="button" role="tab" aria-controls="trip" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/trip-icon.png" alt="icon"> Trips</button>
+                        <button style="cursor: not-allowed;" class="nav-link disabled" id="trip-tab" data-target="#trip" type="button" role="tab" aria-controls="trip" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/trip-icon.png" alt="icon"> Trips</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link disabled" id="cruise-tab" data-target="#cruise" type="button" role="tab" aria-controls="cruise" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/cruise-icon.png" alt="icon"> Cruises</button>
+                        <button style="cursor: not-allowed;" class="nav-link disabled" id="cruise-tab" data-target="#cruise" type="button" role="tab" aria-controls="cruise" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/cruise-icon.png" alt="icon"> Cruises</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link disabled" id="activity-tab" data-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/activity-icon.png" alt="icon"> Activities</button>
+                        <button style="cursor: not-allowed;" class="nav-link disabled" id="activity-tab" data-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false" aria-disabled="true" disabled><img class="img-fluid d-block" src="assets/images/activity-icon.png" alt="icon"> Activities</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -268,52 +268,94 @@
 
 
 
-
-
-        <!-- WHAT WE SERVE SECTION -->
-        <section class="float-left w-100 what-we-serve-con position-relative main-box padding-top padding-bottom">
-            <img alt="vector" class="vector4 wow bounceInUp img-fluid position-absolute" data-wow-duration="2s" src="assets/images/vector4.png">
-            <img alt="vector" class="vector5 wow bounceInUp img-fluid position-absolute" data-wow-duration="2s" src="assets/images/vector5.png">
-            <div class="container wow bounceInUp" data-wow-duration="2s">
-                <div class="row">
-                    <div class="col-lg-5">
-                        <h4 class="mustard-text text-uppercase">What We Serve</h4>
-                        <h2 class="text-uppercase text-right">Top Values <br>
-                            For You!</h2>
-                    </div>
-                    <div class="col-xl-10 col-12 mr-auto ml-auto serve-outer text-center">
-
-                        <!-- Box 1 -->
-                        <div class="server-box var1">
-                            <img class="img-fluid" src="assets/images/serve-icon1.png" alt="icon">
-                            <h4>Wide Range of Tours</h4>
-                            <p class="mb-0">From Jagannath Puri Dham to Konark, Chilika, and tribal heartlands — we offer diverse packages to suit every traveler.</p>
-                        </div>
-
-                        <!-- Box 2 -->
-                        <div class="server-box var2">
-                            <img class="img-fluid" src="assets/images/serve-icon2.png" alt="icon">
-                            <h4>Expert Local Guides</h4>
-                            <p class="mb-0">Our knowledgeable guides share hidden stories, cultural insights, and make your journey truly meaningful.</p>
-                        </div>
-
-                        <!-- Box 3 -->
-                        <div class="server-box var3">
-                            <img class="img-fluid" src="assets/images/serve-icon3.png" alt="icon">
-                            <h4>Easy & Hassle-Free Booking</h4>
-                            <p class="mb-0">Simple booking process, transparent pricing, and 24/7 support to make your travel stress-free.</p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- bg outer wrapper -->
     </div>
 
 
 
+
+
+    <!-- TOP DESTINATIONS SECTION -->
+    <section class="float-left w-100 top-destinations-con position-relative padding-top padding-bottom main-box">
+        <img alt="vector" class="vector4 wow bounceInUp img-fluid position-absolute" data-wow-duration="2s" src="assets/images/vector4.png">
+        <img alt="vector" class="vector5 wow bounceInUp img-fluid position-absolute" data-wow-duration="2s" src="assets/images/vector5.png">
+        <div class="container top-destination-con1 wow bounceInUp" data-wow-duration="2s">
+
+            <div class="heading-title text-center">  
+                <h4 class="text-uppercase">Car Rentals</h4>  
+                <h2 class="">Comfortable Rides to Temples & Beaches <br> in Puri</h2>  
+            </div>
+
+            <div class="owl-carousel">
+                <?php
+                // Build/Reuse DB connection (reuse $conn if already set earlier)
+                if (!isset($conn) || !($conn instanceof mysqli) || $conn->connect_error) {
+                  require_once __DIR__ . '/config/config.php';
+                  if (!isset($conn) || !($conn instanceof mysqli)) {
+                    $servername = 'localhost';
+                    $username = 'root';
+                    $password = '';
+                    $dbname = 'shreekshetra_travels';
+                    $conn = @new mysqli($servername, $username, $password, $dbname);
+                    if ($conn && !$conn->connect_error) {
+                      @mysqli_set_charset($conn, 'utf8mb4');
+                    }
+                  }
+                }
+
+                $puriDestinations = [];
+                if ($conn && !$conn->connect_error) {
+                  $sql = "SELECT id, title, location, category, price, image_url
+                            FROM destinations
+                            WHERE status=1 AND (location LIKE '%Puri%' OR title LIKE '%Puri%')
+                            ORDER BY id DESC";
+                  if ($res = $conn->query($sql)) {
+                    while ($row = $res->fetch_assoc()) {
+                      $puriDestinations[] = $row;
+                    }
+                    $res->free();
+                  }
+                }
+                ?>
+
+                <?php if (!empty($puriDestinations)): ?>
+                    <?php
+                    foreach ($puriDestinations as $d):
+                      $title = htmlspecialchars($d['title']);
+                      $loc = htmlspecialchars($d['location']);
+                      $price = number_format((float) $d['price']);
+                      $img = htmlspecialchars($d['image_url']);
+                      ?>
+                    <div class="item">
+                        <div class="destination-box position-relative">
+                            <div class="orange-tag position-absolute">₹<?= $price ?></div>
+                            <figure><img src="<?= $img ?>" alt="<?= $title ?>" class="img-fluid"></figure>
+                            <div class="bottom-con">
+                                <span class="d-block text-uppercase"><?= $loc ?></span>
+                                <a href="destinations.php">
+                                    <h4><?= $title ?></h4>
+                                </a>
+                                <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1k+ Reviews)</span></span>
+                            </div>
+                            <button class="view-trip-btn book-now-btn"
+                                    data-activity-id="<?= (int) $d['id'] ?>"
+                                    data-activity-title="<?= $title ?>">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="item">
+                        <div class="destination-box position-relative p-4 text-center">
+                            <h6 class="mb-0">No Puri destinations available right now.</h6>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </section>
 
 
 
@@ -344,31 +386,36 @@
                             // Fetch latest 5 active destinations for homepage carousel
                             require_once __DIR__ . '/config/config.php';
                             if (!isset($conn) || !($conn instanceof mysqli)) {
-                                $servername = "localhost";
-                                $username = "root";
-                                $password = "";
-                                $dbname = "shreekshetra_travels";
-                                $conn = @new mysqli($servername, $username, $password, $dbname);
-                                if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+                              $servername = 'localhost';
+                              $username = 'root';
+                              $password = '';
+                              $dbname = 'shreekshetra_travels';
+                              $conn = @new mysqli($servername, $username, $password, $dbname);
+                              if ($conn && !$conn->connect_error) {
+                                @mysqli_set_charset($conn, 'utf8mb4');
+                              }
                             }
 
                             $latestDestinations = [];
                             if ($conn && !$conn->connect_error) {
-                                $sql = "SELECT id, title, location, category, price, image_url FROM destinations WHERE status=1 ORDER BY id DESC LIMIT 5";
-                                if ($res = $conn->query($sql)) {
-                                    while ($row = $res->fetch_assoc()) { $latestDestinations[] = $row; }
-                                    $res->free();
+                              $sql = 'SELECT id, title, location, category, price, image_url FROM destinations WHERE status=1 ORDER BY id DESC LIMIT 5';
+                              if ($res = $conn->query($sql)) {
+                                while ($row = $res->fetch_assoc()) {
+                                  $latestDestinations[] = $row;
                                 }
+                                $res->free();
+                              }
                             }
                             ?>
                             <?php if (!empty($latestDestinations)): ?>
-                                <?php foreach ($latestDestinations as $d):
-                                    $title = htmlspecialchars($d['title']);
-                                    $loc = htmlspecialchars($d['location']);
-                                    $cat = htmlspecialchars($d['category']);
-                                    $img = htmlspecialchars($d['image_url']);
-                                    $price = number_format((float)$d['price']);
-                                ?>
+                                <?php
+                                foreach ($latestDestinations as $d):
+                                  $title = htmlspecialchars($d['title']);
+                                  $loc = htmlspecialchars($d['location']);
+                                  $cat = htmlspecialchars($d['category']);
+                                  $img = htmlspecialchars($d['image_url']);
+                                  $price = number_format((float) $d['price']);
+                                  ?>
                                 <div class="item">
                                     <div class="package-box">
                                         <span class="d-block location-span"><i class="fa-solid fa-location-dot"></i> <?= $loc ?></span>
@@ -382,7 +429,7 @@
                                                 <span class="price d-inline-block p-0 m-0">₹<?= $price ?></span>
                                             </span>
                                             <button class="grey-btn d-inline-block book-now-btn"
-                                                    data-activity-id="<?= (int)$d['id'] ?>"
+                                                    data-activity-id="<?= (int) $d['id'] ?>"
                                                     data-activity-title="<?= $title ?>">
                                                 Book Now
                                             </button>
@@ -526,37 +573,42 @@
                 <?php
                 // Build/Reuse DB connection (reuse $conn if already set earlier)
                 if (!isset($conn) || !($conn instanceof mysqli) || $conn->connect_error) {
-                    require_once __DIR__ . '/config/config.php';
-                    if (!isset($conn) || !($conn instanceof mysqli)) {
-                        $servername = "localhost";
-                        $username = "root";
-                        $password = "";
-                        $dbname = "shreekshetra_travels";
-                        $conn = @new mysqli($servername, $username, $password, $dbname);
-                        if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
+                  require_once __DIR__ . '/config/config.php';
+                  if (!isset($conn) || !($conn instanceof mysqli)) {
+                    $servername = 'localhost';
+                    $username = 'root';
+                    $password = '';
+                    $dbname = 'shreekshetra_travels';
+                    $conn = @new mysqli($servername, $username, $password, $dbname);
+                    if ($conn && !$conn->connect_error) {
+                      @mysqli_set_charset($conn, 'utf8mb4');
                     }
+                  }
                 }
 
                 $puriDestinations = [];
                 if ($conn && !$conn->connect_error) {
-                    $sql = "SELECT id, title, location, category, price, image_url
+                  $sql = "SELECT id, title, location, category, price, image_url
                             FROM destinations
                             WHERE status=1 AND (location LIKE '%Puri%' OR title LIKE '%Puri%')
                             ORDER BY id DESC";
-                    if ($res = $conn->query($sql)) {
-                        while ($row = $res->fetch_assoc()) { $puriDestinations[] = $row; }
-                        $res->free();
+                  if ($res = $conn->query($sql)) {
+                    while ($row = $res->fetch_assoc()) {
+                      $puriDestinations[] = $row;
                     }
+                    $res->free();
+                  }
                 }
                 ?>
 
                 <?php if (!empty($puriDestinations)): ?>
-                    <?php foreach ($puriDestinations as $d):
-                        $title = htmlspecialchars($d['title']);
-                        $loc   = htmlspecialchars($d['location']);
-                        $price = number_format((float)$d['price']);
-                        $img   = htmlspecialchars($d['image_url']);
-                    ?>
+                    <?php
+                    foreach ($puriDestinations as $d):
+                      $title = htmlspecialchars($d['title']);
+                      $loc = htmlspecialchars($d['location']);
+                      $price = number_format((float) $d['price']);
+                      $img = htmlspecialchars($d['image_url']);
+                      ?>
                     <div class="item">
                         <div class="destination-box position-relative">
                             <div class="orange-tag position-absolute">₹<?= $price ?></div>
@@ -569,7 +621,7 @@
                                 <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1k+ Reviews)</span></span>
                             </div>
                             <button class="view-trip-btn book-now-btn"
-                                    data-activity-id="<?= (int)$d['id'] ?>"
+                                    data-activity-id="<?= (int) $d['id'] ?>"
                                     data-activity-title="<?= $title ?>">
                                 Book Now
                             </button>
@@ -901,7 +953,7 @@
             submitBtn.disabled = true;
             try {
               const fd = new FormData(form);
-              const res = await fetch('process/booking.php', {
+              const res = await fetch('process/destination_booking.php', {
                 method: 'POST',
                 body: fd
               });

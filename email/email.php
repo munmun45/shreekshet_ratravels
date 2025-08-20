@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
-function sendPaymentEmail($to, $studentName, $subject, $body) {
+function sendPaymentEmail($destination, $body) {
     $mail = new PHPMailer(true);
 
     try {
@@ -16,16 +16,16 @@ function sendPaymentEmail($to, $studentName, $subject, $body) {
         $mail->Port = 587;
         $mail->SMTPDebug = 0; // Set to 2 for debugging
         $mail->SMTPAuth = true;
-        $mail->Username = 'info@satyameducation.org.in';
-        $mail->Password = 'Qwertyuiop1@';
+        $mail->Username = 'no_reply@shreekshetratravels.com';
+        $mail->Password = '5Gc9ShT?';
 
         //Recipients
-        $mail->setFrom('info@satyameducation.org.in', 'Satyam Education');
-        $mail->addAddress($to, $studentName);
+        $mail->setFrom('no_reply@shreekshetratravels.com', 'Shreekshetra Travels');
+        $mail->addAddress('maharanamunmun@gmail.com', $destination);
 
         //Content
         $mail->isHTML(true);
-        $mail->Subject = $subject;
+        $mail->Subject = 'New Booking';
         $mail->Body    = $body;
 
         $mail->send();

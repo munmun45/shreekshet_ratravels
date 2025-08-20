@@ -38,28 +38,34 @@ try {
         throw new Exception('Failed to ensure hotel_bookings table: ' . $conn->error);
     }
 
-    // Inputs
-    $destination = isset($_POST['destination']) ? trim($_POST['destination']) : '';
-    $checkin     = isset($_POST['checkin']) ? trim($_POST['checkin']) : '';
-    $checkout    = isset($_POST['checkout']) ? trim($_POST['checkout']) : '';
-    $adults      = isset($_POST['adults']) ? (int)$_POST['adults'] : 0;
-    $children    = isset($_POST['children']) ? (int)$_POST['children'] : 0;
-    $mobile      = isset($_POST['mobile']) ? preg_replace('/\D+/', '', $_POST['mobile']) : '';
-    $email       = isset($_POST['email']) ? trim($_POST['email']) : null;
+    // Inputs - mapping destination booking fields to hotel_bookings structure
+    $activity_id = isset($_POST['activity_id']) ? (int)$_POST['activity_id'] : 0;
+    $activity_title = isset($_POST['activity_title']) ? trim($_POST['activity_title']) : '';
+    $date = isset($_POST['date']) ? trim($_POST['date']) : '';
+    $adults = isset($_POST['adults']) ? (int)$_POST['adults'] : 0;
+    $children = isset($_POST['children']) ? (int)$_POST['children'] : 0;
+    $mobile = isset($_POST['mobile']) ? preg_replace('/\D+/', '', $_POST['mobile']) : '';
+    $email = isset($_POST['email']) ? trim($_POST['email']) : null;
+
+    // Map to hotel_bookings structure
+    $destination = $activity_title; // Use activity_title as destination
+    $checkin = $date; // Use booking date as checkin
+    $checkout = ''; // Set checkout as empty string as requested
 
     // Validation
-    if ($destination === '') throw new Exception('Please enter destination');
-    if ($checkin === '' || $checkout === '') throw new Exception('Please select check-in and check-out');
+    if ($activity_id <= 0) throw new Exception('Invalid destination selected');
+    if ($destination === '') throw new Exception('Destination title is required');
+    if ($checkin === '') throw new Exception('Please select booking date');
     if ($adults < 1) throw new Exception('At least 1 adult is required');
     if (strlen($mobile) < 10) throw new Exception('Please enter a valid 10-digit mobile number');
     if ($email !== null && $email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         throw new Exception('Invalid email address');
     }
-    if (strtotime($checkout) < strtotime($checkin)) {
-        throw new Exception('Check-out date cannot be before check-in');
+    if (strtotime($checkin) < strtotime('today')) {
+        throw new Exception('Booking date cannot be in the past');
     }
 
-    // Insert booking
+    // Insert booking into hotel_bookings table
     $ins = $conn->prepare("INSERT INTO hotel_bookings (destination, checkin, checkout, adults, children, mobile, email) VALUES (?,?,?,?,?,?,?)");
     if (!$ins) throw new Exception('Prepare failed: ' . $conn->error);
     $ins->bind_param('sssiiis', $destination, $checkin, $checkout, $adults, $children, $mobile, $email);
@@ -77,9 +83,10 @@ try {
     try {
         require_once __DIR__ . '/../email/email.php';
         
-        $html = '<h2>New Hotel Booking</h2>' .
+        $html = '<h2>New Destination Booking</h2>' .
             '<p><strong>Destination:</strong> ' . htmlspecialchars($destination) . '</p>' .
-            '<p><strong>Check-in:</strong> ' . htmlspecialchars($checkin) . ' | <strong>Check-out:</strong> ' . htmlspecialchars($checkout) . '</p>' .
+            '<p><strong>Activity ID:</strong> ' . (int)$activity_id . '</p>' .
+            '<p><strong>Booking Date:</strong> ' . htmlspecialchars($checkin) . '</p>' .
             '<p><strong>Adults:</strong> ' . (int)$adults . ' | <strong>Children:</strong> ' . (int)$children . '</p>' .
             '<p><strong>Mobile:</strong> ' . htmlspecialchars($mobile) . '</p>' .
             '<p><strong>Email:</strong> ' . htmlspecialchars((string)$email) . '</p>' .
@@ -97,8 +104,8 @@ try {
     $logDir = __DIR__ . '/../email_api/logs';
     if (!is_dir($logDir)) { @mkdir($logDir, 0777, true); }
     @file_put_contents(
-        $logDir . '/activity_bookings.log',
-        date('c') . " | #$booking_id | Hotel:$destination | Checkin:$checkin | Checkout:$checkout | Adults:$adults | Children:$children | Mobile:$mobile | Email:$email | Mail:" . ($mailSent ? 'OK' : ('FAIL:' . $mailError)) . "\n",
+        $logDir . '/destination_bookings.log',
+        date('c') . " | #$booking_id | Destination:$destination | Date:$checkin | Adults:$adults | Children:$children | Mobile:$mobile | Email:$email | Mail:" . ($mailSent ? 'OK' : ('FAIL:' . $mailError)) . "\n",
         FILE_APPEND
     );
 
