@@ -283,7 +283,7 @@
 
             <div class="heading-title text-center">  
                 <h4 class="text-uppercase">Car Rentals</h4>  
-                <h2 class="">Comfortable Rides to Temples & Beaches <br> in Puri</h2>  
+                <h2 class="">Comfortable Rides <br> in Puri</h2>  
             </div>
 
             <div class="owl-carousel">
@@ -303,43 +303,53 @@
                   }
                 }
 
-                $puriDestinations = [];
+                $availableCars = [];
                 if ($conn && !$conn->connect_error) {
-                  $sql = "SELECT id, title, location, category, price, image_url
-                            FROM destinations
-                            WHERE status=1 AND (location LIKE '%Puri%' OR title LIKE '%Puri%')
-                            ORDER BY id DESC";
+                  $sql = "SELECT id, car_name, car_model, car_type, seating_capacity, price_per_day, price_per_km, image_url, features
+                            FROM cars
+                            WHERE status=1
+                            ORDER BY id DESC LIMIT 6";
                   if ($res = $conn->query($sql)) {
                     while ($row = $res->fetch_assoc()) {
-                      $puriDestinations[] = $row;
+                      $availableCars[] = $row;
                     }
                     $res->free();
                   }
                 }
                 ?>
 
-                <?php if (!empty($puriDestinations)): ?>
+                <?php if (!empty($availableCars)): ?>
                     <?php
-                    foreach ($puriDestinations as $d):
-                      $title = htmlspecialchars($d['title']);
-                      $loc = htmlspecialchars($d['location']);
-                      $price = number_format((float) $d['price']);
-                      $img = htmlspecialchars($d['image_url']);
+                    foreach ($availableCars as $car):
+                      $car_name = htmlspecialchars($car['car_name']);
+                      $car_model = htmlspecialchars($car['car_model']);
+                      $car_type = htmlspecialchars($car['car_type']);
+                      $capacity = (int) $car['seating_capacity'];
+                      $price_day = number_format((float) $car['price_per_day']);
+                      $price_km = number_format((float) $car['price_per_km']);
+                      $img = htmlspecialchars($car['image_url']);
+                      $features = htmlspecialchars($car['features']);
                       ?>
                     <div class="item">
                         <div class="destination-box position-relative">
-                            <div class="orange-tag position-absolute">₹<?= $price ?></div>
-                            <figure><img src="<?= $img ?>" alt="<?= $title ?>" class="img-fluid"></figure>
+                            
+                            <figure><img src="<?= $img ?>" alt="<?= $car_name ?>" class="img-fluid"></figure>
                             <div class="bottom-con">
-                                <span class="d-block text-uppercase"><?= $loc ?></span>
-                                <a href="destinations.php">
-                                    <h4><?= $title ?></h4>
+                                <div class="car-info">
+                                    <span class="car-type-badge"><?= $car_type ?></span>
+                                    <span class="car-capacity"><i class="fa-solid fa-users"></i> <?= $capacity ?> seats</span>
+                                </div>
+                                <a href="car-rental.php">
+                                    <h4><?= $car_name ?> - <?= $car_model ?></h4>
                                 </a>
-                                <span class="d-inline-block star-con"><i class="fa-solid fa-star"></i> 4.8 <span class="d-inline-block review-span">(1k+ Reviews)</span></span>
+                                <div class="car-pricing">
+                                    <span class="price-per-day">₹<?= $price_day ?>/day</span>
+                                    <span class="price-per-km">₹<?= $price_km ?>/km</span>
+                                </div>
                             </div>
                             <button class="view-trip-btn book-now-btn"
-                                    data-activity-id="<?= (int) $d['id'] ?>"
-                                    data-activity-title="<?= $title ?>">
+                                    data-car-id="<?= (int) $car['id'] ?>"
+                                    data-car-name="<?= $car_name ?>">
                                 Book Now
                             </button>
                         </div>
@@ -348,7 +358,7 @@
                 <?php else: ?>
                     <div class="item">
                         <div class="destination-box position-relative p-4 text-center">
-                            <h6 class="mb-0">No Puri destinations available right now.</h6>
+                            <h6 class="mb-0">No cars available right now.</h6>
                         </div>
                     </div>
                 <?php endif; ?>

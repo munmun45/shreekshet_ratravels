@@ -1092,9 +1092,56 @@ span {
     min-width: 190px;
 }
 
-/* TOP DESTINATIONS SECTION */
+/* TOP DESTINATIONS SECTION / CAR RENTALS SECTION */
 .top-destinations-con {
     background: linear-gradient(to bottom, #b2f3de 0%, #ffffff 100%);
+}
+
+/* Car Rental Specific Styles */
+.top-destinations-con .destination-box .car-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.top-destinations-con .destination-box .car-type-badge {
+    background-color: var(--primary--color);
+    color: var(--secondary--color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.top-destinations-con .destination-box .car-capacity {
+    background-color: var(--light-green-color);
+    color: var(--navy-color);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.top-destinations-con .destination-box .car-pricing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e9e9ec;
+}
+
+.top-destinations-con .destination-box .price-per-day {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--mustard-color);
+}
+
+.top-destinations-con .destination-box .price-per-km {
+    font-size: 14px;
+    color: var(--text-color);
 }
 
 .heading-title h4 {

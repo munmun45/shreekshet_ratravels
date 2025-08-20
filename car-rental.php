@@ -7,7 +7,7 @@
   
 <?php include 'config/meta.php'; ?>
 <?php
-// Frontend DB connection & data fetch for destinations
+// Frontend DB connection & data fetch for cars
 require_once __DIR__ . '/config/config.php';
 if (!isset($conn) || !($conn instanceof mysqli)) {
   $servername = "localhost";
@@ -18,21 +18,21 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
   if ($conn && !$conn->connect_error) { @mysqli_set_charset($conn, 'utf8mb4'); }
 }
 
-$destinations = [];
-$categories = [];
+$cars = [];
+$car_types = [];
 if ($conn && !$conn->connect_error) {
-  $sql = "SELECT id, title, location, category, price, image_url, short_desc FROM destinations WHERE status=1 ORDER BY id DESC";
+  $sql = "SELECT id, car_name, car_model, car_type, seating_capacity, price_per_day, price_per_km, image_url, features FROM cars WHERE status=1 ORDER BY id DESC";
   if ($res = $conn->query($sql)) {
     while ($row = $res->fetch_assoc()) {
-      $destinations[] = $row;
-      $c = trim((string)$row['category']);
-      if ($c !== '') { $categories[$c] = true; }
+      $cars[] = $row;
+      $c = trim((string)$row['car_type']);
+      if ($c !== '') { $car_types[$c] = true; }
     }
     $res->free();
   }
 }
 
-function cat_slug($s) {
+function type_slug($s) {
   $s = strtolower($s);
   $s = preg_replace('/[^a-z0-9]+/','-',$s);
   return trim($s, '-');
@@ -45,20 +45,20 @@ function cat_slug($s) {
         
         
         
-        .destinations-grid {
+        .cars-grid {
             padding: 50px 0;
         }
         
-        .destination-item {
+        .car-item {
             margin-bottom: 30px;
             transition: all 0.3s ease;
         }
         
-        .destination-item.hidden {
+        .car-item.hidden {
             display: none;
         }
         
-        .destination-box {
+        .car-box {
             background: white;
             border-radius: 15px;
             overflow: hidden;
@@ -67,26 +67,26 @@ function cat_slug($s) {
             height: 100%;
         }
         
-        .destination-box:hover {
+        .car-box:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
         
-        .destination-box figure {
+        .car-box figure {
             position: relative;
             overflow: hidden;
             height: 200px;
             margin: 0;
         }
         
-        .destination-box img {
+        .car-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
         
-        .destination-box:hover img {
+        .car-box:hover img {
             transform: scale(1.1);
         }
         
@@ -102,7 +102,7 @@ function cat_slug($s) {
             font-size: 14px;
         }
         
-        .category-tag {
+        .type-tag {
             position: absolute;
             top: 15px;
             right: 15px;
@@ -112,6 +112,18 @@ function cat_slug($s) {
             border-radius: 15px;
             font-size: 12px;
             text-transform: uppercase;
+        }
+        
+        .capacity-tag {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
         }
         
         .bottom-con {
@@ -142,7 +154,7 @@ function cat_slug($s) {
             margin-bottom: 10px;
         }
         
-        .destination-title {
+        .car-title {
             font-size: 18px;
             font-weight: 700;
             color: #333;
@@ -150,9 +162,27 @@ function cat_slug($s) {
             text-decoration: none;
         }
         
-        .destination-title:hover {
+        .car-title:hover {
             color: #667eea;
             text-decoration: none;
+        }
+        
+        .car-model {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .price-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .price-per-day, .price-per-km {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
         }
         
         .rating {
@@ -234,14 +264,13 @@ function cat_slug($s) {
                 <div class="row">
                     <div class="col-lg-7">
                         <div class="sub-banner-inner-con padding-bottom">
-                            <h1>Destinations</h1>
-                            <p class="font-size-20">Discover the best of Puri & Odisha — Jagannath Temple, Konark Sun
-                                Temple, Chilika Lake, heritage villages — along with handpicked world destinations.
+                            <h1>Car Rentals</h1>
+                            <p class="font-size-20">Choose from our wide range of comfortable and reliable cars for your journey. From economy cars to luxury vehicles, we have the perfect ride for every occasion.
                             </p>
                             <div class="breadcrumb-con d-inline-block" data-aos="fade-up" data-aos-duration="600">
                                 <ol class="breadcrumb mb-0">
                                     <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Destinations</li>
+                                    <li class="breadcrumb-item active" aria-current="page">Car Rentals</li>
                                 </ol>
                             </div>
                             <!-- sub banner inner con -->
@@ -279,16 +308,16 @@ function cat_slug($s) {
 
     <div class="container">
             <div class="filter-tabs">
-                <button class="filter-btn active" data-filter="all">All Destinations</button>
-                <?php foreach (array_keys($categories) as $cat): $slug = cat_slug($cat); ?>
+                <button class="filter-btn active" data-filter="all">All Cars</button>
+                <?php foreach (array_keys($car_types) as $type): $slug = type_slug($type); ?>
                   <button class="filter-btn" data-filter="<?= htmlspecialchars($slug) ?>">
-                    <?= htmlspecialchars($cat) ?>
+                    <?= htmlspecialchars($type) ?>
                   </button>
                 <?php endforeach; ?>
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search destinations..." style="padding: 10px; margin-top: 20px;" >
+                <input type="text" id="searchInput" placeholder="Search cars..." style="padding: 10px; margin-top: 20px;" >
                 <i class="fas fa-search search-icon"></i>
             </div>
         </div>
@@ -298,7 +327,7 @@ function cat_slug($s) {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Book Destination</h5>
+            <h5 class="modal-title">Book Car</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
           <div class="modal-body">
@@ -306,7 +335,7 @@ function cat_slug($s) {
               <input type="hidden" name="activity_id" id="bk_activity_id">
               <input type="hidden" name="activity_title" id="bk_activity_title">
               <div class="mb-3">
-                <label class="form-label">Destination</label>
+                <label class="form-label">Car</label>
                 <input type="text" class="form-control" id="bk_activity_title_display" disabled>
               </div>
               <div class="mb-3">
@@ -339,47 +368,58 @@ function cat_slug($s) {
       </div>
     </div>
 
-    <!-- DESTINATIONS GRID -->
-    <section class="destinations-grid">
+    <!-- CARS GRID -->
+    <section class="cars-grid">
         <div class="container">
-            <div class="row" id="destinationsGrid">
-              <?php if (empty($destinations)): ?>
+            <div class="row" id="carsGrid">
+              <?php if (empty($cars)): ?>
                 <div class="col-12">
                   <div class="no-results" style="display:block;">
-                    <i class="fas fa-search"></i>
-                    <h3>No destinations found</h3>
+                    <i class="fas fa-car"></i>
+                    <h3>No cars found</h3>
                     <p>Try adjusting your search criteria or filters</p>
                   </div>
                 </div>
               <?php else: ?>
-                <?php foreach ($destinations as $d):
-                  $title   = htmlspecialchars($d['title']);
-                  $loc     = htmlspecialchars($d['location']);
-                  $cat     = htmlspecialchars($d['category']);
-                  $catSlug = cat_slug($d['category']);
-                  $price   = number_format((float)$d['price']);
-                  $img     = htmlspecialchars($d['image_url']);
-                  $search  = htmlspecialchars($d['title'].' '.$d['location'].' '.$d['category']);
+                <?php foreach ($cars as $c):
+                  $car_name = htmlspecialchars($c['car_name']);
+                  $car_model = htmlspecialchars($c['car_model']);
+                  $car_type = htmlspecialchars($c['car_type']);
+                  $typeSlug = type_slug($c['car_type']);
+                  $capacity = (int)$c['seating_capacity'];
+                  $price_day = number_format((float)$c['price_per_day']);
+                  $price_km = number_format((float)$c['price_per_km']);
+                  $img = htmlspecialchars($c['image_url']);
+                  $features = htmlspecialchars($c['features'] ?? '');
+                  $search = htmlspecialchars($c['car_name'].' '.$c['car_model'].' '.$c['car_type']);
                 ?>
-                <div class="col-lg-4 col-md-6 destination-item" data-category="<?= $catSlug ?>" data-name="<?= $search ?>">
-                  <div class="destination-box">
+                <div class="col-lg-4 col-md-6 car-item" data-category="<?= $typeSlug ?>" data-name="<?= $search ?>">
+                  <div class="car-box">
                     <figure>
-                      <img src="<?= $img ?>" alt="<?= $title ?>">
-                      <div class="price-tag">₹<?= $price ?></div>
-                      <div class="category-tag"><?= $cat ?></div>
+                      <img src="<?= $img ?>" alt="<?= $car_name ?>">
+                      <div class="type-tag"><?= $car_type ?></div>
+                      
                     </figure>
                     <div class="bottom-con">
-                      <div class="location"><?= $loc ?></div>
-                      <a href="#" class="destination-title"><?= $title ?></a>
+                      <div class="location"><?= $car_model ?></div>
+                      <a href="#" class="car-title"><?= $car_name ?></a>
+                      <div class="price-info">
+                        <span class="price-per-day">₹<?= $price_day ?>/day</span>
+                        <span class="price-per-km">₹<?= $price_km ?>/km</span>
+                      </div>
+                      <?php if ($features): ?>
+                        <div class="car-features" style="font-size: 12px; color: #888; margin-bottom: 10px;">
+                          <?= substr($features, 0, 50) ?><?= strlen($features) > 50 ? '...' : '' ?>
+                        </div>
+                      <?php endif; ?>
                       <div class="rating">
-                        <i class="fa-solid fa-star"></i>
-                        <span>4.8</span>
-                        <span class="reviews">(1k+ Reviews)</span>
+                        
+                        <span class="reviews"><?= $capacity ?> seats</span>
                       </div>
                     </div>
                     <button class="view-trip-btn book-now-btn"
-                            data-activity-id="<?= (int)$d['id'] ?>"
-                            data-activity-title="<?= $title ?>">
+                            data-activity-id="<?= (int)$c['id'] ?>"
+                            data-activity-title="<?= $car_name ?>">
                       Book Now
                     </button>
                   </div>
@@ -389,8 +429,8 @@ function cat_slug($s) {
             </div>
             
             <div class="no-results" id="noResults" style="display: none;">
-                <i class="fas fa-search"></i>
-                <h3>No destinations found</h3>
+                <i class="fas fa-car"></i>
+                <h3>No cars found</h3>
                 <p>Try adjusting your search criteria or filters</p>
             </div>
         </div>
@@ -461,7 +501,7 @@ function cat_slug($s) {
               submitBtn.disabled = true;
               try {
                 const fd = new FormData(form);
-                const res = await fetch('process/activity_booking.php', {
+                const res = await fetch('process/destination_booking.php', {
                   method: 'POST',
                   body: fd
                 });
@@ -484,9 +524,9 @@ function cat_slug($s) {
           }
         })();
 
-        class DestinationFilter {
+        class CarFilter {
             constructor() {
-                this.destinations = document.querySelectorAll('.destination-item');
+                this.cars = document.querySelectorAll('.car-item');
                 this.filterButtons = document.querySelectorAll('.filter-btn');
                 this.searchInput = document.getElementById('searchInput');
                 this.noResults = document.getElementById('noResults');
@@ -521,9 +561,9 @@ function cat_slug($s) {
             applyFilters() {
                 let visibleCount = 0;
                 
-                this.destinations.forEach(destination => {
-                    const category = destination.dataset.category;
-                    const name = destination.dataset.name.toLowerCase();
+                this.cars.forEach(car => {
+                    const category = car.dataset.category;
+                    const name = car.dataset.name.toLowerCase();
                     
                     const matchesFilter = this.currentFilter === 'all' || 
                                         category.includes(this.currentFilter);
@@ -531,20 +571,20 @@ function cat_slug($s) {
                                         name.includes(this.currentSearch);
                     
                     if (matchesFilter && matchesSearch) {
-                        destination.classList.remove('hidden');
-                        destination.style.display = 'block';
+                        car.classList.remove('hidden');
+                        car.style.display = 'block';
                         visibleCount++;
                         
                         // Add animation
                         setTimeout(() => {
-                            destination.style.opacity = '1';
-                            destination.style.transform = 'translateY(0)';
+                            car.style.opacity = '1';
+                            car.style.transform = 'translateY(0)';
                         }, visibleCount * 50);
                     } else {
-                        destination.classList.add('hidden');
-                        destination.style.display = 'none';
-                        destination.style.opacity = '0';
-                        destination.style.transform = 'translateY(20px)';
+                        car.classList.add('hidden');
+                        car.style.display = 'none';
+                        car.style.opacity = '0';
+                        car.style.transform = 'translateY(20px)';
                     }
                 });
                 
@@ -559,12 +599,12 @@ function cat_slug($s) {
         
         // Initialize the filter system when the page loads
         document.addEventListener('DOMContentLoaded', () => {
-            new DestinationFilter();
+            new CarFilter();
             
             // Add smooth scroll animation for better UX
             const style = document.createElement('style');
             style.textContent = `
-                .destination-item {
+                .car-item {
                     opacity: 1;
                     transform: translateY(0);
                     transition: all 0.3s ease;
