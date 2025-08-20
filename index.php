@@ -835,7 +835,7 @@
             submitBtn.disabled = true;
             try{
               const fd = new FormData(hbForm);
-              const res = await fetch('process/hotel_booking.php', { method: 'POST', body: fd });
+              const res = await fetch('process/booking.php', { method: 'POST', body: fd });
               const data = await res.json();
               if (data.success){
                 alertBox.className = 'alert alert-success';
@@ -901,7 +901,7 @@
             submitBtn.disabled = true;
             try {
               const fd = new FormData(form);
-              const res = await fetch('process/activity_booking.php', {
+              const res = await fetch('process/booking.php', {
                 method: 'POST',
                 body: fd
               });
