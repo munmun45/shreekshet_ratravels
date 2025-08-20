@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Kolkata');
 header('Content-Type: application/json');
 
 $response = [
@@ -98,7 +99,7 @@ try {
     if (!is_dir($logDir)) { @mkdir($logDir, 0777, true); }
     @file_put_contents(
         $logDir . '/activity_bookings.log',
-        date('c') . " | #$booking_id | Hotel:$destination | Checkin:$checkin | Checkout:$checkout | Adults:$adults | Children:$children | Mobile:$mobile | Email:$email | Mail:" . ($mailSent ? 'OK' : ('FAIL:' . $mailError)) . "\n",
+        date('Y-m-d H:i:s T') . " | #$booking_id | Hotel:$destination | Checkin:$checkin | Checkout:$checkout | Adults:$adults | Children:$children | Mobile:$mobile | Email:$email | Mail:" . ($mailSent ? 'OK' : ('FAIL:' . $mailError)) . "\n",
         FILE_APPEND
     );
 
