@@ -12,6 +12,13 @@
         <hr>
 
         <li class="nav-item">
+            <a class="nav-link collapsed" href="car">
+                <i class="bi bi-geo-alt-fill"></i> <!-- location icon -->
+                <span>Car Manager</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link collapsed" href="destination">
                 <i class="bi bi-geo-alt-fill"></i> <!-- location icon -->
                 <span>Destination Manager</span>
