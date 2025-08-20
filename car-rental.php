@@ -241,6 +241,21 @@ function type_slug($s) {
             background: rgba(102, 126, 234, 0.4);
             border-radius: 10px;
         }
+        
+        /* Make close button larger and more visible */
+        .modal-header .btn-close {
+            font-size: 1.5rem;
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            background-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .modal-header .btn-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
     </style>
 
 </head>
@@ -328,7 +343,7 @@ function type_slug($s) {
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Book Car</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
           </div>
           <div class="modal-body">
             <form id="bookingForm">
@@ -464,11 +479,10 @@ function type_slug($s) {
             document.getElementById('bk_activity_title_display').value = activityTitle;
             const alertBox = document.getElementById('bk_alert');
             if (alertBox) alertBox.className = 'alert d-none';
-            if (window.jQuery && $('#bookingModal').modal) {
-              $('#bookingModal').modal('show');
-            } else {
-              var modalEl = document.getElementById('bookingModal');
-              modalEl.style.display = 'block';
+            const modalEl = document.getElementById('bookingModal');
+            if (modalEl) {
+              const modal = new bootstrap.Modal(modalEl);
+              modal.show();
             }
           }
 
@@ -501,7 +515,7 @@ function type_slug($s) {
               submitBtn.disabled = true;
               try {
                 const fd = new FormData(form);
-                const res = await fetch('process/booking.php', {
+                const res = await fetch('process/destination_booking.php', {
                   method: 'POST',
                   body: fd
                 });
