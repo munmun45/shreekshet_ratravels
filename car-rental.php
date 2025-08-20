@@ -501,7 +501,7 @@ function type_slug($s) {
               submitBtn.disabled = true;
               try {
                 const fd = new FormData(form);
-                const res = await fetch('process/destination_booking.php', {
+                const res = await fetch('process/booking.php', {
                   method: 'POST',
                   body: fd
                 });

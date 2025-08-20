@@ -938,9 +938,20 @@
           const btn = e.target.closest('.book-now-btn');
           if (!btn) return;
           e.preventDefault();
-          const id = btn.getAttribute('data-activity-id');
-          const title = btn.getAttribute('data-activity-title');
-          openBookingModal(id, title);
+          
+          // Check if it's a car booking button
+          const carId = btn.getAttribute('data-car-id');
+          const carName = btn.getAttribute('data-car-name');
+          
+          if (carId && carName) {
+            // Handle car booking
+            openBookingModal(carId, carName);
+          } else {
+            // Handle activity/destination booking
+            const id = btn.getAttribute('data-activity-id');
+            const title = btn.getAttribute('data-activity-title');
+            openBookingModal(id, title);
+          }
         });
 
         // Set min date = today
