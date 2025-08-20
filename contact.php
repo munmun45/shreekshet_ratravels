@@ -1,3 +1,4 @@
+<?php $captcha = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 5); ?>
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -30,13 +31,11 @@
           <div class="col-lg-7">
             <div class="sub-banner-inner-con padding-bottom">
               <h1>Contact Us</h1>
-              <p class="font-size-20">Lorem ipsum dolor sit amet consectetur adipiscing elit sed doeiusm tempor
-                incididunt
-                ut labore et dolore.
+              <p class="font-size-20">We’re here to help with tour packages, bookings, and custom itineraries across Odisha and India.
               </p>
               <div class="breadcrumb-con d-inline-block" data-aos="fade-up" data-aos-duration="600">
                 <ol class="breadcrumb mb-0">
-                  <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                  <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Contact</li>
                 </ol>
               </div>
@@ -81,8 +80,7 @@
             <h4 class="text-uppercase">Talk to us</h4>
             <h2>Get in Touch <br>
               With Us</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliquaquis</p>
+            <p>Have questions about our tour packages, pricing, or availability? Reach out and our team will respond quickly.</p>
             <div class="contact-info">
               <h4 class="text-uppercase sub-heading">Contact Info</h4>
               <ul class="list-unstyled p-0 m-0 contact-info-inner-wrapper">
@@ -130,6 +128,7 @@
       <div class="row">
         <div class="col-12">
           <div class="register-box">
+            <div id="form_result" style="display:none;"></div>
             <form id="contactpage" method="POST">
               <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12">
@@ -163,6 +162,18 @@
                       <div class="form-group mb-0">
                         <label>Your Message:</label>
                         <textarea class="form_style" placeholder="Add your Comments:" rows="5" name="msg"></textarea>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-group d-flex align-items-center" style="gap:12px;">
+                        <div class="flex-grow-1">
+                          <label>Captcha:</label>
+                          <input type="text" class="form_style" id="captcha_val" value="<?php echo $captcha; ?>" readonly>
+                        </div>
+                        <div class="flex-grow-1">
+                          <label>Type Captcha:</label>
+                          <input type="text" class="form_style" id="captcha_text" placeholder="Enter shown text">
+                        </div>
                       </div>
                     </div>
                     <div class="col-12">
