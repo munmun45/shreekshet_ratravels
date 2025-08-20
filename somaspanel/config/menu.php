@@ -29,7 +29,7 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="blog">
                 <i class="bi bi-journal-text"></i> <!-- blog/article icon -->
-                <span>Blog Manager</span>
+                <span>News & Article</span>
             </a>
         </li>
 

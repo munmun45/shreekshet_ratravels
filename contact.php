@@ -129,7 +129,7 @@
         <div class="col-12">
           <div class="register-box">
             <div id="form_result" style="display:none;"></div>
-            <form id="contactpage" method="POST">
+            <form id="contactpage" method="POST" action="process/contact.php">
               <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                   <div class="row">
@@ -137,21 +137,21 @@
                       <div class="form-group">
                         <label>Your Name:</label>
                         <input type="text" class="form_style" placeholder="Enter Your Full Name:" name="fname"
-                          id="fname">
+                          id="fname" required>
                       </div>
                     </div>
                     <div class="col-12">
                       <div class="form-group">
                         <label>Your Email:</label>
                         <input type="email" class="form_style" placeholder="Enter Your Email Address" name="email"
-                          id="email">
+                          id="email" required>
                       </div>
                     </div>
                     <div class="col-12">
                       <div class="form-group fon-con">
                         <label>Your Phone:</label>
                         <input type="tel" class="mb-md-0 form_style" placeholder="Enter Your Contact Number:"
-                          name="phone" id="phone">
+                          name="phone" id="phone" required>
                       </div>
                     </div>
                   </div>
@@ -161,21 +161,10 @@
                     <div class="col-12">
                       <div class="form-group mb-0">
                         <label>Your Message:</label>
-                        <textarea class="form_style" placeholder="Add your Comments:" rows="5" name="msg"></textarea>
+                        <textarea class="form_style" placeholder="Add your Comments:" rows="5" name="msg" required></textarea>
                       </div>
                     </div>
-                    <div class="col-12">
-                      <div class="form-group d-flex align-items-center" style="gap:12px;">
-                        <div class="flex-grow-1">
-                          <label>Captcha:</label>
-                          <input type="text" class="form_style" id="captcha_val" value="<?php echo $captcha; ?>" readonly>
-                        </div>
-                        <div class="flex-grow-1">
-                          <label>Type Captcha:</label>
-                          <input type="text" class="form_style" id="captcha_text" placeholder="Enter shown text">
-                        </div>
-                      </div>
-                    </div>
+                    
                     <div class="col-12">
                       <div class="manage-button">
                         <button type="submit" id="submit"
@@ -224,6 +213,102 @@
 
 
   
+  <!-- Contact Form JavaScript -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('contactpage');
+      const submitBtn = document.getElementById('submit');
+      const formResult = document.getElementById('form_result');
+      
+      if (!form || !submitBtn || !formResult) {
+          console.error('Form elements not found');
+          return;
+      }
+      
+      form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          console.log('Form submitted');
+          
+          const originalText = submitBtn.innerHTML;
+          
+          // Show loading state
+          submitBtn.innerHTML = 'Sending...';
+          submitBtn.disabled = true;
+          
+          // Get form data
+          const formData = new FormData(this);
+          console.log('Form data prepared');
+          
+          // Send AJAX request
+          fetch('process/contact.php', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => {
+              console.log('Response received:', response.status);
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.text();
+          })
+          .then(text => {
+              console.log('Response text:', text);
+              let data;
+              try {
+                  data = JSON.parse(text);
+              } catch (e) {
+                  console.error('JSON parse error:', e);
+                  throw new Error('Invalid JSON response');
+              }
+              
+              formResult.style.display = 'block';
+              
+              if (data.success) {
+                  formResult.innerHTML = '<div class="alert alert-success"><strong>Success!</strong> ' + data.message + '</div>';
+                  form.reset();
+              } else {
+                  formResult.innerHTML = '<div class="alert alert-danger"><strong>Error!</strong> ' + data.message + '</div>';
+              }
+              
+              // Reset button
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+              
+              // Scroll to result
+              formResult.scrollIntoView({ behavior: 'smooth' });
+          })
+          .catch(error => {
+              console.error('Fetch error:', error);
+              formResult.style.display = 'block';
+              formResult.innerHTML = '<div class="alert alert-danger"><strong>Error!</strong> An error occurred. Please try again. Details: ' + error.message + '</div>';
+              
+              // Reset button
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+          });
+      });
+  });
+  </script>
+  
+  <style>
+  .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+  }
+  .alert-success {
+      color: #3c763d;
+      background-color: #dff0d8;
+      border-color: #d6e9c6;
+  }
+  .alert-danger {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+  }
+  </style>
+
   <?php include 'config/footer.php'; ?>
 
 
