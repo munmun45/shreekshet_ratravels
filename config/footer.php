@@ -5,13 +5,12 @@
             <div class="middle-portion">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 col-sm-6 col-12 footer-logo-con">
-                        <a href="index.html">
+                        <a href="index.php">
                             <figure class="footer-logo">
                                 <img src="assets/images/footer-logo.png" class="img-fluid" alt="">
                             </figure>
                         </a>
-                        <p class="text-size-16 footer-text">Lorem ipsum dolor sit amet, consectetur adipiscing elitsed do eiusmod
-                            tempororem ipsum dolor sit am econsect ametconsectetetur adipiscing.</p>
+                        <p class="text-size-16 footer-text">Shreekhetra Travels is one of the most trusted travel agencies in Odisha, offering customized packages for pilgrimages, leisure tours, and holiday trips across India. </p>
                         <figure class="mb-0 payment-icon">
                             <img src="assets/images/payment-card.png" class="img-fluid" alt="">
                         </figure>
@@ -24,11 +23,10 @@
                             <h4 class="heading">Quick Links</h4>
                             <hr class="line">
                             <ul class="list-unstyled mb-0">
-                                <li><a href="index.html" class="text-size-16 text text-decoration-none">Home</a></li>
-                                <li><a href="service.html" class="text-size-16 text text-decoration-none">Services</a></li>
-                                <li><a href="blog.html" class="text-size-16 text text-decoration-none">Latest News</a></li>
-                                <li><a href="booking.html" class="text-size-16 text text-decoration-none">Booking</a></li>
-                                <li><a href="destinations.html" class="text-size-16 text text-decoration-none mb-0">Destinations</a>
+                                <li><a href="index.php" class="text-size-16 text text-decoration-none">Home</a></li>
+                                <li><a href="service.php" class="text-size-16 text text-decoration-none">Destination</a></li>
+                                <li><a href="activities.php" class="text-size-16 text text-decoration-none">Activities</a></li>
+                                <li><a href="blog.php" class="text-size-16 text text-decoration-none">Blog</a></li>
                                 </li>
                             </ul>
                         </div>
@@ -38,11 +36,10 @@
                             <h4 class="heading">Support</h4>
                             <hr class="line">
                             <ul class="list-unstyled mb-0">
-                                <li><a href="about.html" class="text-size-16 text text-decoration-none">About Us</a></li>
-                                <li><a href="contact.html" class="text-size-16 text text-decoration-none">Contact Us</a></li>
-                                <li><a href="team.html" class="text-size-16 text text-decoration-none">Team</a></li>
-                                <li><a href="faq.html" class="text-size-16 text text-decoration-none">FAQ</a></li>
-                                <li><a href="testimonial.html" class="text-size-16 text text-decoration-none mb-0">Testimonial</a></li>
+                                <li><a href="about.php" class="text-size-16 text text-decoration-none">About Us</a></li>
+                                <li><a href="contact.php" class="text-size-16 text text-decoration-none">Contact Us</a></li>
+                                <li><a href="#0" class="text-size-16 text text-decoration-none">Privacy Policy</a></li>
+                                <li><a href="#0" class="text-size-16 text text-decoration-none">T&C</a></li>
                             </ul>
                         </div>
                     </div>
@@ -54,13 +51,7 @@
                                 <li class="text-size-16 text"><span class="d-inline-block">Email:</span> <a href="mailto:info@shreekshetratravels.com" class="mb-0 text text-decoration-nonetext-size-16">info@shreekshetratravels.com</a></li>
                                 <li class="text-size-16 text"><span class="d-inline-block">Phone:</span> <a href="tel:+919938437982" class="mb-0 text text-decoration-nonetext-size-16">+919938437982</a></li>
                                 <li class="text-size-16 text1"><span class="d-inline-block">Phone:</span> <a href="tel:+919348341126" class="mb-0 text text-decoration-nonetext-size-16">+919348341126</a></li>
-                                <li class="social-icons">
-                                    <div class="circle"><a href="https://www.facebook.com/login/"><i class="fa-brands fa-square-facebook"></i></a></div>
-                                    <div class="circle"><a href="https://twitter.com/i/flow/login"><i class="fa-brands fa-square-x-twitter"></i></a></div>
-                                    <div class="circle"><a href="https://www.linkedin.com/login"><i class="fa-brands fa-linkedin"></i></a>
-                                    </div>
-                                    <div class="circle"><a href="https://www.pinterest.com/"><i class="fa-brands fa-square-pinterest"></i></a></div>
-                                </li>
+                               
                             </ul>
                         </div>
                     </div>
